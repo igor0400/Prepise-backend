@@ -43,6 +43,21 @@ export class UsersController {
    ) {
       return this.usersService.getAllUsers(+limit, +offset, search);
    }
+   
+   @UseGuards(JwtAuthGuard)
+   @Get('personal')
+   async getUserPersonal(@Req() req: CustomReq) {
+      const id = +req.user.sub;
+      const user = await this.usersService.getUserById(id);
+
+      console.log(id);
+
+      if (user) {
+         return user;
+      } else {
+         return `Пользователь с id: ${id} не найден`;
+      }
+   }
 
    @Get(':id')
    async getUserById(@Param('id', ParseIntPipe) id: number) {
