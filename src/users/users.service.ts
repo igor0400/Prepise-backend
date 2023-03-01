@@ -197,6 +197,14 @@ export class UsersService {
       return user;
    }
 
+   async deleteUserById(id: number) {
+      const isDeleted = await this.userRepository.destroy({
+         where: { id },
+      });
+
+      return isDeleted;
+   }
+
    async addRole(dto: AddRoleDto) {
       const user = await this.userRepository.findByPk(dto.userId);
       const role = await this.roleService.getRoleByValue(dto.value);

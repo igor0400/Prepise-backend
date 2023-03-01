@@ -1,29 +1,34 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEmail, IsString } from 'class-validator';
 
 export class LoginRequest {
-  @IsNotEmpty({ message: 'Поле email обязательно' })
-  readonly email: string;
+   @IsNotEmpty({ message: 'Поле email обязательно' })
+   readonly email: string;
 
-  @IsNotEmpty({ message: 'Поле password обязательно' })
-  readonly password: string;
+   @IsNotEmpty({ message: 'Поле password обязательно' })
+   readonly password: string;
 }
 
 export class RegisterRequest {
-  @IsNotEmpty({ message: 'Поле name обязательно' })
-  readonly name: string;
+   @IsNotEmpty({ message: 'Поле name обязательно' })
+   readonly name: string;
 
-  @IsNotEmpty({ message: 'Поле email обязательно' })
-  readonly email: string;
+   @IsNotEmpty({ message: 'Поле email обязательно' })
+   @IsEmail({}, { message: 'Введите корректный email' })
+   readonly email: string;
 
-  @IsNotEmpty({ message: 'Поле emailVerifyCode обязательно' })
-  readonly emailVerifyCode: string;
+   @IsNotEmpty({ message: 'Поле emailVerifyCode обязательно' })
+   @IsString()
+   readonly emailVerifyCode: string;
 
-  @IsNotEmpty({ message: 'Поле password обязательно' })
-  readonly password: string;
+   @IsNotEmpty({ message: 'Поле password обязательно' })
+   @IsString()
+   readonly password: string;
 
-  @IsNotEmpty({ message: 'Поле type обязательно' })
-  readonly type: 'company' | 'user';
+   @IsNotEmpty({ message: 'Поле type обязательно' })
+   @IsString()
+   readonly type: 'company' | 'user';
 
-  @IsNotEmpty({ message: 'Поле gender обязательно' })
-  readonly gender?: 'male' | 'female';
+   @IsOptional({ message: 'Поле gender обязательно' })
+   @IsString()
+   readonly gender?: 'male' | 'female';
 }

@@ -57,6 +57,13 @@ export class UsersController {
 
    @Roles('ADMIN')
    @UseGuards(RolesGuard)
+   @Delete(':id')
+   deleteUserById(@Param('id', ParseIntPipe) id: number) {
+      return this.usersService.deleteUserById(id);
+   }
+
+   @Roles('ADMIN')
+   @UseGuards(RolesGuard)
    @Post('add-role')
    addRole(@Body() dto: AddRoleDto) {
       return this.usersService.addRole(dto);
