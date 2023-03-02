@@ -10,6 +10,12 @@ import { LoginRequest, RegisterRequest } from './requests';
 import { Response, Request } from 'express';
 import { EmailService } from 'src/email/email.service';
 
+const cookiesSettings = {
+   maxAge: refreshTokenTimeCookie,
+   httpOnly: true,
+   signed: true,
+};
+
 @Injectable()
 export class AuthService {
    constructor(
@@ -59,10 +65,7 @@ export class AuthService {
          refreshTokenTime,
       );
 
-      response.cookie('refreshToken', refreshToken, {
-         maxAge: refreshTokenTimeCookie,
-         httpOnly: true,
-      });
+      response.cookie('refreshToken', refreshToken, cookiesSettings);
 
       const currentUser = await this.userService.getUserByEmail(
          registerRequest.email,
@@ -95,11 +98,7 @@ export class AuthService {
             refreshTokenTime,
          );
 
-         response.cookie('refreshToken', refreshToken, {
-            maxAge: refreshTokenTimeCookie,
-            httpOnly: true,
-            signed: true
-         });
+         response.cookie('refreshToken', refreshToken, cookiesSettings);
 
          const currentUser = await this.userService.getUserByEmailWithType(
             email,
@@ -116,17 +115,18 @@ export class AuthService {
    }
 
    async refresh(request: Request, response: Response) {
+      console.log(request);
+      const cookiesRefreshToken =
+         request.cookies.refreshToken ?? request.signedCookies.refreshToken;
+
       const { user, accessToken, refreshToken } =
          await this.tokensService.createTokensFromRefreshToken(
-            request.cookies.refreshToken,
+            cookiesRefreshToken,
             request.headers['user-agent'],
             request.ip,
          );
 
-      response.cookie('refreshToken', refreshToken, {
-         maxAge: refreshTokenTimeCookie,
-         httpOnly: true,
-      });
+      response.cookie('refreshToken', refreshToken, cookiesSettings);
 
       return { accessToken, user };
    }
