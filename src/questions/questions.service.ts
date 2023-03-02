@@ -276,7 +276,6 @@ export class QuestionsService {
     });
 
     if (imgs.length || files.length) {
-      console.log(imgs, files);
       this.filesService.deleteQuestionFiles(id);
     }
 

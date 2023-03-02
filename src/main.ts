@@ -9,13 +9,13 @@ async function bootstrap() {
    const app = await NestFactory.create(AppModule);
 
    const corsOptions = {
-      credentials: false,
+      credentials: true,
       origin: process.env.CLIENT_URL,
    };
 
    app.useGlobalPipes(new ValidationPipe());
    app.use(cors(corsOptions));
-   app.use(cookieParser());
+   app.use(cookieParser(process.env.COOKIE_SECRET));
 
    await app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 }

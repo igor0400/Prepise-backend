@@ -50,8 +50,6 @@ export class UsersController {
       const id = +req.user.sub;
       const user = await this.usersService.getUserById(id);
 
-      console.log(id);
-
       if (user) {
          return user;
       } else {

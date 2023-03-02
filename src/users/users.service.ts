@@ -161,6 +161,15 @@ export class UsersService {
       return user;
    }
 
+   async getUserByEmailWithType(email: string, type: 'company' | 'user') {
+      const user = await this.userRepository.findOne({
+         where: { email, type },
+         include: usersInclude,
+      });
+
+      return user;
+   }
+
    async createUser(userDto: CreateUserDto) {
       const password = await hash(userDto.password, 10);
 

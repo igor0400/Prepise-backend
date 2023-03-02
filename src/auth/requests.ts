@@ -6,6 +6,10 @@ export class LoginRequest {
 
    @IsNotEmpty({ message: 'Поле password обязательно' })
    readonly password: string;
+
+   @IsNotEmpty({ message: 'Поле type обязательно' })
+   @IsString()
+   readonly type: 'company' | 'user';
 }
 
 export class RegisterRequest {
