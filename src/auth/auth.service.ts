@@ -115,7 +115,6 @@ export class AuthService {
    }
 
    async refresh(request: Request, response: Response) {
-      console.log(request);
       const cookiesRefreshToken =
          request.cookies.refreshToken ?? request.signedCookies.refreshToken;
 
