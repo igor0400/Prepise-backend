@@ -43,7 +43,7 @@ export class UsersController {
    ) {
       return this.usersService.getAllUsers(+limit, +offset, search);
    }
-   
+
    @UseGuards(JwtAuthGuard)
    @Get('personal')
    async getUserPersonal(@Req() req: CustomReq) {
@@ -58,8 +58,8 @@ export class UsersController {
    }
 
    @Get(':id')
-   async getUserById(@Param('id', ParseIntPipe) id: number) {
-      const user = await this.usersService.getUserById(id, false);
+   async getReducedUserById(@Param('id', ParseIntPipe) id: number) {
+      const user = await this.usersService.getReducedUserById(id, false);
 
       if (user) {
          return user;

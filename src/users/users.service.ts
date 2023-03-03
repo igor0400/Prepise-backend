@@ -31,8 +31,7 @@ import { EmailService } from 'src/email/email.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserOnline } from './models/user-online.model';
 
-export const usersInclude = [
-   { model: UserSession },
+export const reducedUsersInclude = [
    { model: Role },
    { model: BanUser },
    { model: UserInfo },
@@ -42,6 +41,14 @@ export const usersInclude = [
    { model: User, as: 'followingUsers' },
    { model: Question, as: 'questions' },
    { model: Block, as: 'blocks' },
+   { model: UserPost, include: [UserPostImage] },
+   { model: Achievement },
+   { model: UserOnline },
+];
+
+export const usersInclude = [
+   ...reducedUsersInclude,
+   { model: UserSession },
    { model: Question, as: 'favouriteQuestions' },
    { model: Question, as: 'favouriteTestQuestions' },
    { model: Block, as: 'favouriteBlocks' },
@@ -52,9 +59,6 @@ export const usersInclude = [
    { model: Interview },
    { model: Notification },
    { model: Settings, include: [NotifiSettings] },
-   { model: UserPost, include: [UserPostImage] },
-   { model: Achievement },
-   { model: UserOnline },
 ];
 
 @Injectable()
@@ -128,7 +132,7 @@ export class UsersService {
       const users = await this.userRepository.findAll({
          offset: offset || 0,
          limit: limit || 100,
-         include: usersInclude,
+         include: reducedUsersInclude,
          where: {
             type: 'user',
             name: {
@@ -139,6 +143,20 @@ export class UsersService {
       });
 
       return users;
+   }
+
+   async getReducedUserById(
+      id: number,
+      isCompanies: boolean = true,
+   ): Promise<User> {
+      const where = isCompanies ? { id } : { id, type: 'user' };
+
+      const user = await this.userRepository.findOne({
+         where,
+         include: reducedUsersInclude,
+      });
+
+      return user;
    }
 
    async getUserById(id: number, isCompanies: boolean = true): Promise<User> {
