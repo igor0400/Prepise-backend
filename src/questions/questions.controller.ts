@@ -56,7 +56,7 @@ export class QuestionsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('question')
+  @Post('default-question')
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'image', maxCount: 10 },

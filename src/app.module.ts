@@ -74,6 +74,10 @@ import { ChatMessage } from './chat/models/chat-message.model';
 import { Chat } from './chat/models/chat.model';
 import { ChatUser } from './chat/models/chat-users.model';
 import { UserOnline } from './users/models/user-online.model';
+import { DataModule } from './data/data.module';
+import { Sections } from './data/models/services.model';
+import { Positions } from './data/models/positions.model';
+import { Companies } from './data/models/companies.model';
 
 @Module({
    imports: [
@@ -144,6 +148,9 @@ import { UserOnline } from './users/models/user-online.model';
             ChatMessage,
             ChatUser,
             UserOnline,
+            Sections,
+            Positions,
+            Companies,
          ],
       }),
       UsersModule,
@@ -165,6 +172,7 @@ import { UserOnline } from './users/models/user-online.model';
       PostsModule,
       AchievementsModule,
       ChatModule,
+      DataModule,
    ],
 })
 export class AppModule {}

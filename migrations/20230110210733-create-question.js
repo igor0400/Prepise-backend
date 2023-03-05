@@ -26,7 +26,7 @@ module.exports = {
       },
       interviewPosition: Sequelize.STRING(100),
       section: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(100),
         allowNull: false,
       },
       description: {
