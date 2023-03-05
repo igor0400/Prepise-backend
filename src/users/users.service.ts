@@ -387,7 +387,8 @@ export class UsersService {
       gender: 'male' | 'female' = undefined,
    ) {
       if (userType === 'company') {
-         return '/avatars/default/companies/main.png';
+        // это заготовка для будущих аватарок компаний
+         return null;
       } else {
          if (gender === 'male') {
             return `/avatars/default/users/${gender}/${

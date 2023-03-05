@@ -35,7 +35,6 @@ module.exports = {
       description: Sequelize.TEXT,
       avatar: {
         type: Sequelize.STRING(1000),
-        allowNull: false,
       },
       followers: {
         type: Sequelize.INTEGER,

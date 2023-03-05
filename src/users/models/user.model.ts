@@ -92,7 +92,6 @@ export class User extends Model<User, UserCreationArgs> {
 
    @Column({
       type: DataType.STRING,
-      allowNull: false,
    })
    avatar: string;
 
