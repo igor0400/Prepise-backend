@@ -26,7 +26,7 @@ export class DataController {
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
-      return this.dataService.getSections({
+      return this.dataService.getPositions({
          limit: +limit,
          offset: +offset,
          search,
@@ -39,7 +39,7 @@ export class DataController {
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
-      return this.dataService.getSections({
+      return this.dataService.getCompanies({
          limit: +limit,
          offset: +offset,
          search,
