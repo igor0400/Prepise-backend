@@ -23,12 +23,13 @@ import { QuestionUsedUserInfo } from './question-used-user-info.model';
 import { TestQuestionInfo } from './test-question-info.model';
 
 interface QuestionCreationArgs {
-  authorId: number;
-  title: string;
-  description: string;
-  section: string;
-  commented?: boolean;
-  interviewPosition?: string;
+   authorId: number;
+   title: string;
+   description: string;
+   content: string;
+   section: string;
+   commented?: boolean;
+   interviewPosition?: string;
 }
 
 @Table({ tableName: 'QUESTIONS' })
@@ -78,10 +79,15 @@ export class Question extends Model<Question, QuestionCreationArgs> {
   section: string;
 
   @Column({
+    type: DataType.STRING,
+  })
+  description: string;
+
+  @Column({
     type: DataType.TEXT,
     allowNull: false,
   })
-  description: string;
+  content: string;
 
   @Column({
     type: DataType.INTEGER,

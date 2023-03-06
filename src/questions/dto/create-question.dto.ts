@@ -15,9 +15,13 @@ export class CreateQuestionDto {
    @MaxLength(100)
    readonly title: string;
 
+   @IsOptional()
    @IsString()
+   readonly description?: string;
+
    @IsNotEmpty()
-   readonly description: string;
+   @IsString()
+   readonly content: string;
 
    @IsNotEmpty()
    readonly tags: string | string[];
