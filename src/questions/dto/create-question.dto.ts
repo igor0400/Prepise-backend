@@ -17,6 +17,7 @@ export class CreateQuestionDto {
 
    @IsOptional()
    @IsString()
+   @MaxLength(100)
    readonly description?: string;
 
    @IsNotEmpty()
