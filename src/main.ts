@@ -11,11 +11,11 @@ async function bootstrap() {
    let app;
 
    if (devOption === 'production') {
+      const domain = process.env.CLIENT_DOMAIN ?? 'prepise.com';
+
       const httpsOptions = {
-         key: fs.readFileSync('/etc/letsencrypt/live/prepise.com/privkey.pem'),
-         cert: fs.readFileSync(
-            '/etc/letsencrypt/live/prepise.com/fullchain.pem',
-         ),
+         key: fs.readFileSync(`/etc/letsencrypt/live/${domain}/privkey.pem`),
+         cert: fs.readFileSync(`/etc/letsencrypt/live/${domain}/fullchain.pem`),
       };
 
       app = await NestFactory.create(AppModule, {
