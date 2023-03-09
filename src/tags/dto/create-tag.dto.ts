@@ -10,5 +10,6 @@ export class CreateTagDto {
   @IsString()
   @MaxLength(300)
   readonly description: string;
+  
   readonly authorId: number;
 }
