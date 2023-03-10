@@ -8,28 +8,26 @@ import fs from 'fs';
 async function bootstrap() {
    const devOption = process.env.NODE_ENV;
 
-   let app;
+   let app = await NestFactory.create(AppModule);
 
-   if (devOption === 'production') {
-      const domain = process.env.CLIENT_DOMAIN ?? 'prepise.com';
+   //  if (devOption === 'production') {
+   //     const domain = process.env.CLIENT_DOMAIN ?? 'prepise.com';
 
-      const httpsOptions = {
-         key: fs.readFileSync(`/etc/letsencrypt/live/${domain}/privkey.pem`),
-         cert: fs.readFileSync(`/etc/letsencrypt/live/${domain}/fullchain.pem`),
-      };
+   //     const httpsOptions = {
+   //        key: fs.readFileSync(`/etc/letsencrypt/live/${domain}/privkey.pem`),
+   //        cert: fs.readFileSync(`/etc/letsencrypt/live/${domain}/fullchain.pem`),
+   //     };
 
-      app = await NestFactory.create(AppModule, {
-         httpsOptions,
-      });
-   } else {
-      app = await NestFactory.create(AppModule);
-   }
+   //     app = await NestFactory.create(AppModule, {
+   //        httpsOptions,
+   //     });
+   //  }
 
    const PORT = process.env.PORT ?? 5000;
 
    const corsOptions = {
       credentials: true,
-      origin: process.env.CLIENT_URL,
+      origin: [process.env.CLIENT_URL, 'http://localhost:3000'],
    };
 
    app.useGlobalPipes(new ValidationPipe());
@@ -38,4 +36,5 @@ async function bootstrap() {
 
    await app.listen(PORT, () => console.log(`Server started on port: ${PORT}`));
 }
+
 bootstrap();
