@@ -100,7 +100,11 @@ export class QuestionsService {
    }
 
    async createQuestion(dto: CreateQuestionDto, takenFiles: Files) {
-      const question = await this.questionRepository.create(dto);
+      const commented = dto?.commented ? JSON.parse(dto.commented) : true;
+      const question = await this.questionRepository.create({
+         ...dto,
+         commented,
+      });
       const {
          interviewCompany,
          interviewPosition,
@@ -245,7 +249,11 @@ export class QuestionsService {
          }
 
          if (question[key] !== undefined) {
-            question[key] = dto[key];
+            if (key === 'commented') {
+               question.commented = JSON.parse(dto.commented);
+            } else {
+               question[key] = dto[key];
+            }
          }
       }
 

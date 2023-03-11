@@ -1,6 +1,7 @@
 import {
    IsArray,
    IsBoolean,
+   IsEnum,
    IsNotEmpty,
    IsObject,
    IsOptional,
@@ -28,8 +29,8 @@ export class ChangeQuestionDto {
    readonly content?: string;
 
    @IsOptional()
-   @IsBoolean()
-   readonly commented?: boolean;
+   @IsEnum(['true', 'false'], { message: 'Поле commented должно быть true или false' })
+   readonly commented?: 'true' | 'false';
 
    @IsOptional()
    @IsString()

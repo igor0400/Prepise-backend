@@ -1,5 +1,6 @@
 import {
    IsBoolean,
+   IsEnum,
    IsNotEmpty,
    IsOptional,
    IsString,
@@ -28,8 +29,10 @@ export class CreateQuestionDto {
    readonly tags: string | string[];
 
    @IsOptional()
-   @IsBoolean()
-   readonly commented?: boolean;
+   @IsEnum(['true', 'false'], {
+      message: 'Поле commented должно быть true или false',
+   })
+   readonly commented?: 'true' | 'false';
 
    @IsNotEmpty()
    @IsString()
