@@ -1,8 +1,6 @@
 import {
-   IsArray,
    IsEnum,
    IsNotEmpty,
-   IsNumber,
    IsOptional,
    IsString,
    MaxLength,
@@ -14,13 +12,8 @@ export class CreateBlockDto {
 
    @IsNotEmpty()
    @IsString()
-   @MaxLength(100)
+   @MaxLength(100, { message: 'поле title должно быть короче 100 символов' })
    readonly title: string;
-
-   @IsNotEmpty()
-   @IsString()
-   @MaxLength(100)
-   readonly description: string;
 
    @IsNotEmpty()
    @IsString()
@@ -32,16 +25,15 @@ export class CreateBlockDto {
    readonly section: string;
 
    @IsNotEmpty()
-   @IsArray()
-   readonly tags: string[];
+   readonly tags: string[] | string;
 
    @IsNotEmpty()
-   @IsArray()
-   readonly questions: string[];
+   readonly questions: string[] | string;
 
    @IsOptional()
-   @IsNumber()
-   readonly maxProgress?: number;
+   @IsString()
+   @MaxLength(100)
+   readonly description?: string;
 
    @IsOptional()
    @IsEnum(['true', 'false'], {

@@ -1,5 +1,4 @@
 import {
-   IsBoolean,
    IsEnum,
    IsNotEmpty,
    IsOptional,
@@ -11,9 +10,9 @@ export class CreateQuestionDto {
    readonly authorId: number;
    readonly type?: 'default' | 'test';
 
-   @IsString()
    @IsNotEmpty()
-   @MaxLength(100)
+   @IsString()
+   @MaxLength(100, { message: 'поле title должно быть короче 100 символов' })
    readonly title: string;
 
    @IsOptional()
@@ -30,7 +29,7 @@ export class CreateQuestionDto {
 
    @IsOptional()
    @IsEnum(['true', 'false'], {
-      message: 'Поле commented должно быть true или false',
+      message: 'Поле commented должно быть строкой true или false',
    })
    readonly commented?: 'true' | 'false';
 

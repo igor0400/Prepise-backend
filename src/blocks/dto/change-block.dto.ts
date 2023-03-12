@@ -1,11 +1,11 @@
 import {
-  IsArray,
-  IsEnum,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-  MaxLength,
+   IsArray,
+   IsEnum,
+   IsNumber,
+   IsObject,
+   IsOptional,
+   IsString,
+   MaxLength,
 } from 'class-validator';
 
 export class ChangeBlockDto {
@@ -31,8 +31,7 @@ export class ChangeBlockDto {
    readonly section?: string;
 
    @IsOptional()
-   @IsArray()
-   readonly tags?: string[];
+   readonly tags?: string[] | string;
 
    @IsOptional()
    @IsEnum(['true', 'false'], {
@@ -41,10 +40,5 @@ export class ChangeBlockDto {
    readonly commented?: 'true' | 'false';
 
    @IsOptional()
-   @IsNumber()
-   readonly maxProgress?: number;
-
-   @IsOptional()
-   @IsArray()
-   readonly questions?: string[];
+   readonly questions?: string[] | string;
 }

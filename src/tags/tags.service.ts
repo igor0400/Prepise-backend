@@ -183,6 +183,7 @@ export class TagsService {
    async createBlockTags(dto: CreateBlockTagsDto, authorId: number) {
       const createdTags = [];
       const { tags, blockId } = dto;
+      const arrTags = typeof tags === 'string' ? [tags] : tags;
 
       const block = await this.blockRepository.findOne({
          where: {
@@ -196,9 +197,9 @@ export class TagsService {
          throw new HttpException('Блок не найден', HttpStatus.NOT_FOUND);
       }
 
-      await this.changeTagFields('inc', dto.tags, 'used');
+      await this.changeTagFields('inc', arrTags, 'used');
 
-      tags.forEach(async (tagId) => {
+      arrTags.forEach(async (tagId) => {
          createdTags.push(
             await this.blockTagRepository.create({
                blockId: +blockId,
@@ -303,24 +304,16 @@ export class TagsService {
    }) {
       const { userId, tags } = args.dto;
       const createdTags = [];
+      const arrTags = typeof tags === 'string' ? [tags] : tags;
 
-      if (typeof tags === 'object') {
-         tags.forEach(async (tagId) => {
-            createdTags.push(
-               await args.repository.create({
-                  userId,
-                  tagId: +tagId,
-               }),
-            );
-         });
-      } else if (typeof tags === 'string') {
+      arrTags.forEach(async (tagId) => {
          createdTags.push(
             await args.repository.create({
                userId,
-               tagId: +tags,
+               tagId: +tagId,
             }),
          );
-      }
+      });
 
       return createdTags;
    }

@@ -72,7 +72,15 @@ export class BlocksService {
             { model: QuestionComment, include: [QuestionCommentReply] },
          ],
       },
-      { model: User, include: [Role, UserInfo, Question, Block] },
+      {
+         model: User,
+         include: [
+            Role,
+            UserInfo,
+            { model: Question, as: 'questions' },
+            { model: Block, as: 'blocks' },
+         ],
+      },
    ];
 
    async getAllBlocks(limit: number, offset: number, search: string = '') {
@@ -99,7 +107,11 @@ export class BlocksService {
    }
 
    async createBlock(dto: CreateBlockDto) {
-      await this.isQuestionsCreated(dto.questions, dto.type === 'test');
+      const { questions } = dto;
+      const arrQuestions =
+         typeof questions === 'string' ? [questions] : questions;
+
+      await this.isQuestionsCreated(arrQuestions, dto.type === 'test');
 
       const commented = dto?.commented ? JSON.parse(dto.commented) : true;
       const block = await this.blockRepository.create({ ...dto, commented });
@@ -107,7 +119,7 @@ export class BlocksService {
       if (dto.type === 'test') {
          await this.testBlockInfoRepository.create({
             blockId: block.id,
-            maxProgress: dto.maxProgress ?? 0,
+            maxProgress: arrQuestions.length,
          });
       }
 
@@ -121,9 +133,7 @@ export class BlocksService {
          );
       }
 
-      if (dto.questions.length) {
-         this.createQuestions(dto.questions, block.id);
-      }
+      this.createQuestions(arrQuestions, block.id);
 
       return block;
    }
@@ -152,9 +162,12 @@ export class BlocksService {
                authorId,
             );
          }
+         const { questions } = dto;
+         const arrQuestions =
+            typeof questions === 'string' ? [questions] : questions;
 
          if (key === 'questions') {
-            await this.changeBlockQuestions(block.id, dto.questions);
+            await this.changeBlockQuestions(block.id, arrQuestions);
          }
 
          if (block[key] !== undefined) {
