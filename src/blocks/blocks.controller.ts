@@ -1,15 +1,15 @@
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Query,
-  Req,
-  UseGuards,
+   Body,
+   Controller,
+   Delete,
+   Get,
+   Param,
+   ParseIntPipe,
+   Patch,
+   Post,
+   Query,
+   Req,
+   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomReq } from 'src/types/request-type';
@@ -49,6 +49,7 @@ export class BlocksController {
       return this.blocksService.createBlock({
          ...dto,
          authorId: +req.user.sub,
+         type: 'default',
       });
    }
 
@@ -58,6 +59,7 @@ export class BlocksController {
       return this.blocksService.createBlock({
          ...dto,
          authorId: +req.user.sub,
+         type: 'test',
       });
    }
 

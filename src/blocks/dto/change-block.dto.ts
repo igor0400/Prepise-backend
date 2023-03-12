@@ -1,8 +1,6 @@
 import {
   IsArray,
-  IsBoolean,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
@@ -11,12 +9,6 @@ import {
 } from 'class-validator';
 
 export class ChangeBlockDto {
-   @IsNotEmpty()
-   @IsString()
-   readonly type: 'default' | 'test';
-
-   @IsNotEmpty()
-   @IsNumber()
    readonly authorId: number;
 
    @IsOptional()
@@ -26,7 +18,12 @@ export class ChangeBlockDto {
 
    @IsOptional()
    @IsString()
+   @MaxLength(100)
    readonly description?: string;
+
+   @IsOptional()
+   @IsString()
+   readonly content?: string;
 
    @IsOptional()
    @IsString()
@@ -44,19 +41,10 @@ export class ChangeBlockDto {
    readonly commented?: 'true' | 'false';
 
    @IsOptional()
-   @IsString()
-   @MaxLength(100)
-   readonly interviewPosition?: string;
-
-   @IsOptional()
    @IsNumber()
    readonly maxProgress?: number;
 
    @IsOptional()
    @IsArray()
    readonly questions?: string[];
-
-   @IsOptional()
-   @IsObject()
-   readonly defaultBlockInfo?: { interviewCompany: string };
 }

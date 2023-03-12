@@ -27,7 +27,6 @@ import { BlockComment } from './models/block-comment.model';
 import { BlockQuestion } from './models/block-question.model';
 import { BlockUsedUserInfo } from './models/block-used-user-info.model';
 import { Block } from './models/block.model';
-import { DefaultBlockInfo } from './models/default-block-info.model';
 import { TestBlockInfo } from './models/test-block-info.model';
 import { Op } from 'sequelize';
 
@@ -38,8 +37,6 @@ export class BlocksService {
       private blockRepository: typeof Block,
       @InjectModel(TestBlockInfo)
       private testBlockInfoRepository: typeof TestBlockInfo,
-      @InjectModel(DefaultBlockInfo)
-      private defaultBlockInfoRepository: typeof DefaultBlockInfo,
       @InjectModel(BlockQuestion)
       private blockQuestionRepository: typeof BlockQuestion,
       @InjectModel(BlockComment)
@@ -57,7 +54,6 @@ export class BlocksService {
    ) {}
 
    private readonly blocksInclude = [
-      { model: DefaultBlockInfo },
       { model: TestBlockInfo },
       { model: BanBlock },
       { model: BlockUsedUserInfo },
@@ -113,11 +109,6 @@ export class BlocksService {
             blockId: block.id,
             maxProgress: dto.maxProgress ?? 0,
          });
-      } else {
-         await this.defaultBlockInfoRepository.create({
-            blockId: block.id,
-            interviewCompany: dto.interviewCompany ?? null,
-         });
       }
 
       if (dto.tags.length) {
@@ -155,13 +146,6 @@ export class BlocksService {
       }
 
       for (let key in dto) {
-         if (key === 'defaultBlockInfo') {
-            this.changeDefaultBlockInfo(
-               block.id,
-               dto.defaultBlockInfo?.interviewCompany,
-            );
-         }
-
          if (key === 'tags') {
             this.tagsService.changeBlockTags(
                { tags: dto.tags, blockId: block.id.toString() },
@@ -203,7 +187,6 @@ export class BlocksService {
       });
 
       await this.blockRepository.destroy({ where: { id: blockId } });
-      await this.defaultBlockInfoRepository.destroy({ where: { blockId } });
       await this.testBlockInfoRepository.destroy({ where: { blockId } });
       await this.blockUUIRepository.destroy({ where: { blockId } });
       await this.banBlockRepository.destroy({ where: { blockId } });
@@ -225,18 +208,6 @@ export class BlocksService {
       }
 
       return `Блок с id: ${blockId} удален`;
-   }
-
-   async changeDefaultBlockInfo(
-      blockId: number,
-      interviewCompany: string = null,
-   ) {
-      const blockInfo = await this.defaultBlockInfoRepository.findOrCreate({
-         where: { blockId },
-      });
-
-      blockInfo[0].interviewCompany = interviewCompany;
-      return blockInfo[0].save();
    }
 
    async changeBlockQuestions(blockId: number, questions: string[]) {

@@ -36,7 +36,6 @@ import { UserFollowingTag } from './tags/models/user-following-tags.model';
 import { UserIgnoredTag } from './tags/models/user-ignored-tag.model';
 import { BlocksModule } from './blocks/blocks.module';
 import { Block } from './blocks/models/block.model';
-import { DefaultBlockInfo } from './blocks/models/default-block-info.model';
 import { TestBlockInfo } from './blocks/models/test-block-info.model';
 import { TestBlockUserProgress } from './blocks/models/test-block-user-progress.model';
 import { BlockTag } from './tags/models/block-tag.model';
@@ -120,7 +119,6 @@ import { Companies } from './data/models/companies.model';
             UserIgnoredTag,
             Block,
             BlockTag,
-            DefaultBlockInfo,
             TestBlockInfo,
             TestBlockUserProgress,
             BlockQuestion,

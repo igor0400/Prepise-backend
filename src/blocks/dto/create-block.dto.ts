@@ -1,6 +1,5 @@
 import {
    IsArray,
-   IsBoolean,
    IsEnum,
    IsNotEmpty,
    IsNumber,
@@ -10,6 +9,9 @@ import {
 } from 'class-validator';
 
 export class CreateBlockDto {
+   readonly authorId: number;
+   readonly type: 'default' | 'test';
+
    @IsNotEmpty()
    @IsString()
    @MaxLength(100)
@@ -17,15 +19,12 @@ export class CreateBlockDto {
 
    @IsNotEmpty()
    @IsString()
+   @MaxLength(100)
    readonly description: string;
 
    @IsNotEmpty()
    @IsString()
-   readonly type: 'default' | 'test';
-
-   @IsNotEmpty()
-   @IsNumber()
-   readonly authorId: number;
+   readonly content: string;
 
    @IsNotEmpty()
    @IsString()
@@ -36,27 +35,17 @@ export class CreateBlockDto {
    @IsArray()
    readonly tags: string[];
 
-   @IsOptional()
-   @IsEnum(['true', 'false'], {
-      message: 'Поле commented должно быть true или false',
-   })
-   readonly commented?: 'true' | 'false';
-
-   @IsOptional()
-   @IsString()
-   @MaxLength(100)
-   readonly interviewPosition?: string;
-
-   @IsOptional()
-   @IsString()
-   @MaxLength(100)
-   readonly interviewCompany?: string;
+   @IsNotEmpty()
+   @IsArray()
+   readonly questions: string[];
 
    @IsOptional()
    @IsNumber()
    readonly maxProgress?: number;
 
    @IsOptional()
-   @IsArray()
-   readonly questions?: string[];
+   @IsEnum(['true', 'false'], {
+      message: 'Поле commented должно быть true или false',
+   })
+   readonly commented?: 'true' | 'false';
 }

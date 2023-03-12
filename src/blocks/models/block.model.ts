@@ -17,7 +17,6 @@ import { User } from 'src/users/models/user.model';
 import { BlockComment } from './block-comment.model';
 import { BlockQuestion } from './block-question.model';
 import { BlockUsedUserInfo } from './block-used-user-info.model';
-import { DefaultBlockInfo } from './default-block-info.model';
 import { TestBlockInfo } from './test-block-info.model';
 
 interface BlockCreationArgs {
@@ -98,9 +97,6 @@ export class Block extends Model<Block, BlockCreationArgs> {
     defaultValue: 0,
   })
   viewes: number;
-
-  @HasOne(() => DefaultBlockInfo)
-  defaultBlockInfo: DefaultBlockInfo;
 
   @HasOne(() => TestBlockInfo)
   testBlockInfo: TestBlockInfo;
