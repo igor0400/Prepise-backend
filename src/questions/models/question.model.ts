@@ -25,7 +25,7 @@ import { TestQuestionInfo } from './test-question-info.model';
 interface QuestionCreationArgs {
    authorId: number;
    title: string;
-   description: string;
+   description?: string;
    content: string;
    section: string;
    commented?: boolean;

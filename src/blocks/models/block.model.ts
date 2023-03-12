@@ -23,6 +23,7 @@ interface BlockCreationArgs {
   authorId: number;
   title: string;
   description: string;
+  content: string;
   section: string;
   commented?: boolean;
   interviewPosition?: string;
@@ -57,22 +58,21 @@ export class Block extends Model<Block, BlockCreationArgs> {
   type: 'default' | 'test';
 
   @Column({
+    type: DataType.STRING,
+  })
+  description: string;
+
+  @Column({
     type: DataType.TEXT,
     allowNull: false,
   })
-  description: string;
+  content: string;
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: true,
   })
   commented: boolean;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  interviewPosition: string;
 
   @Column({
     type: DataType.STRING,
