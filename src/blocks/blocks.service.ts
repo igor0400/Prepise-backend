@@ -33,418 +33,429 @@ import { Op } from 'sequelize';
 
 @Injectable()
 export class BlocksService {
-  constructor(
-    @InjectModel(Block)
-    private blockRepository: typeof Block,
-    @InjectModel(TestBlockInfo)
-    private testBlockInfoRepository: typeof TestBlockInfo,
-    @InjectModel(DefaultBlockInfo)
-    private defaultBlockInfoRepository: typeof DefaultBlockInfo,
-    @InjectModel(BlockQuestion)
-    private blockQuestionRepository: typeof BlockQuestion,
-    @InjectModel(BlockComment)
-    private blockCommentRepository: typeof BlockComment,
-    @InjectModel(BlockCommentReply)
-    private blockCommentReplyRepository: typeof BlockCommentReply,
-    @InjectModel(BlockUsedUserInfo)
-    private blockUUIRepository: typeof BlockUsedUserInfo,
-    @InjectModel(BanBlock)
-    private banBlockRepository: typeof BanBlock,
-    @InjectModel(Question)
-    private questionRepository: typeof Question,
-    private tagsService: TagsService,
-    private questionsService: QuestionsService,
-  ) {}
+   constructor(
+      @InjectModel(Block)
+      private blockRepository: typeof Block,
+      @InjectModel(TestBlockInfo)
+      private testBlockInfoRepository: typeof TestBlockInfo,
+      @InjectModel(DefaultBlockInfo)
+      private defaultBlockInfoRepository: typeof DefaultBlockInfo,
+      @InjectModel(BlockQuestion)
+      private blockQuestionRepository: typeof BlockQuestion,
+      @InjectModel(BlockComment)
+      private blockCommentRepository: typeof BlockComment,
+      @InjectModel(BlockCommentReply)
+      private blockCommentReplyRepository: typeof BlockCommentReply,
+      @InjectModel(BlockUsedUserInfo)
+      private blockUUIRepository: typeof BlockUsedUserInfo,
+      @InjectModel(BanBlock)
+      private banBlockRepository: typeof BanBlock,
+      @InjectModel(Question)
+      private questionRepository: typeof Question,
+      private tagsService: TagsService,
+      private questionsService: QuestionsService,
+   ) {}
 
-  private readonly blocksInclude = [
-    { model: DefaultBlockInfo },
-    { model: TestBlockInfo },
-    { model: BanBlock },
-    { model: BlockUsedUserInfo },
-    { model: BlockComment, include: [BlockCommentReply] },
-    { model: Tag },
-    {
-      model: Question,
-      include: [
-        DefaultQuestionInfo,
-        TestQuestionInfo,
-        QuestionImg,
-        QuestionFile,
-        BanQuestion,
-        QuestionUsedUserInfo,
-        Tag,
-        { model: QuestionComment, include: [QuestionCommentReply] },
-      ],
-    },
-    { model: User, include: [Role, UserInfo, Question, Block] },
-  ];
-
-  async getAllBlocks(limit: number, offset: number, search: string = '') {
-    const blocks = await this.blockRepository.findAll({
-      offset: offset || 0,
-      limit: limit || 100,
-      include: this.blocksInclude,
-      where: {
-        title: {
-          [Op.like]: `%${search}%`,
-        },
+   private readonly blocksInclude = [
+      { model: DefaultBlockInfo },
+      { model: TestBlockInfo },
+      { model: BanBlock },
+      { model: BlockUsedUserInfo },
+      { model: BlockComment, include: [BlockCommentReply] },
+      { model: Tag },
+      {
+         model: Question,
+         include: [
+            DefaultQuestionInfo,
+            TestQuestionInfo,
+            QuestionImg,
+            QuestionFile,
+            BanQuestion,
+            QuestionUsedUserInfo,
+            Tag,
+            { model: QuestionComment, include: [QuestionCommentReply] },
+         ],
       },
-      order: ['id'],
-    });
-    return blocks;
-  }
+      { model: User, include: [Role, UserInfo, Question, Block] },
+   ];
 
-  async getBlockById(id: number) {
-    const block = this.blockRepository.findOne({
-      where: { id },
-      include: this.blocksInclude,
-    });
-    return block;
-  }
-
-  async createBlock(dto: CreateBlockDto) {
-    await this.isQuestionsCreated(dto.questions, dto.type === 'test');
-
-    const block = await this.blockRepository.create(dto);
-
-    if (dto.type === 'test') {
-      await this.testBlockInfoRepository.create({
-        blockId: block.id,
-        maxProgress: dto.maxProgress ?? 0,
+   async getAllBlocks(limit: number, offset: number, search: string = '') {
+      const blocks = await this.blockRepository.findAll({
+         offset: offset || 0,
+         limit: limit || 100,
+         include: this.blocksInclude,
+         where: {
+            title: {
+               [Op.like]: `%${search}%`,
+            },
+         },
+         order: ['id'],
       });
-    } else {
-      await this.defaultBlockInfoRepository.create({
-        blockId: block.id,
-        interviewCompany: dto.interviewCompany ?? null,
+      return blocks;
+   }
+
+   async getBlockById(id: number) {
+      const block = this.blockRepository.findOne({
+         where: { id },
+         include: this.blocksInclude,
       });
-    }
+      return block;
+   }
 
-    if (dto.tags.length) {
-      await this.tagsService.createBlockTags(
-        {
-          blockId: block.id.toString(),
-          tags: dto.tags,
-        },
-        dto.authorId,
-      );
-    }
+   async createBlock(dto: CreateBlockDto) {
+      await this.isQuestionsCreated(dto.questions, dto.type === 'test');
 
-    if (dto.questions.length) {
-      this.createQuestions(dto.questions, block.id);
-    }
+      const commented = dto?.commented ? JSON.parse(dto.commented) : true;
+      const block = await this.blockRepository.create({ ...dto, commented });
 
-    return block;
-  }
-
-  async changeBlockInfo(
-    blockId: number,
-    authorId: number,
-    dto: ChangeBlockDto,
-  ) {
-    const block = await this.blockRepository.findOne({
-      where: { id: blockId, authorId },
-      include: { all: true },
-    });
-
-    if (!block) {
-      throw new HttpException(
-        'У вас недостаточно прав для изменения этого блока',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-
-    for (let key in dto) {
-      if (key === 'defaultBlockInfo') {
-        this.changeDefaultBlockInfo(
-          block.id,
-          dto.defaultBlockInfo?.interviewCompany,
-        );
+      if (dto.type === 'test') {
+         await this.testBlockInfoRepository.create({
+            blockId: block.id,
+            maxProgress: dto.maxProgress ?? 0,
+         });
+      } else {
+         await this.defaultBlockInfoRepository.create({
+            blockId: block.id,
+            interviewCompany: dto.interviewCompany ?? null,
+         });
       }
 
-      if (key === 'tags') {
-        this.tagsService.changeBlockTags(
-          { tags: dto.tags, blockId: block.id.toString() },
-          authorId,
-        );
+      if (dto.tags.length) {
+         await this.tagsService.createBlockTags(
+            {
+               blockId: block.id.toString(),
+               tags: dto.tags,
+            },
+            dto.authorId,
+         );
       }
 
-      if (key === 'questions') {
-        await this.changeBlockQuestions(block.id, dto.questions);
+      if (dto.questions.length) {
+         this.createQuestions(dto.questions, block.id);
       }
 
-      if (block[key] !== undefined) {
-        block[key] = dto[key];
+      return block;
+   }
+
+   async changeBlockInfo(
+      blockId: number,
+      authorId: number,
+      dto: ChangeBlockDto,
+   ) {
+      const block = await this.blockRepository.findOne({
+         where: { id: blockId, authorId },
+         include: { all: true },
+      });
+
+      if (!block) {
+         throw new HttpException(
+            'У вас недостаточно прав для изменения этого блока',
+            HttpStatus.FORBIDDEN,
+         );
       }
-    }
 
-    return block.save();
-  }
+      for (let key in dto) {
+         if (key === 'defaultBlockInfo') {
+            this.changeDefaultBlockInfo(
+               block.id,
+               dto.defaultBlockInfo?.interviewCompany,
+            );
+         }
 
-  async deleteBlock(
-    blockId: number,
-    authorId: number,
-    deleteQuestions: boolean = true,
-  ) {
-    const block = await this.blockRepository.findOne({
-      where: { id: blockId, authorId },
-    });
+         if (key === 'tags') {
+            this.tagsService.changeBlockTags(
+               { tags: dto.tags, blockId: block.id.toString() },
+               authorId,
+            );
+         }
 
-    if (!block) {
-      throw new HttpException('Блок не найден', HttpStatus.NOT_FOUND);
-    }
+         if (key === 'questions') {
+            await this.changeBlockQuestions(block.id, dto.questions);
+         }
 
-    const comment = await this.blockCommentRepository.findOne({
-      where: { blockId },
-    });
+         if (block[key] !== undefined) {
+            if (key === 'commented') {
+               block.commented = JSON.parse(dto.commented);
+            } else {
+               block[key] = dto[key];
+            }
+         }
+      }
 
-    await this.blockRepository.destroy({ where: { id: blockId } });
-    await this.defaultBlockInfoRepository.destroy({ where: { blockId } });
-    await this.testBlockInfoRepository.destroy({ where: { blockId } });
-    await this.blockUUIRepository.destroy({ where: { blockId } });
-    await this.banBlockRepository.destroy({ where: { blockId } });
-    await this.blockCommentRepository.destroy({ where: { blockId } });
+      return block.save();
+   }
 
-    if (comment) {
-      await this.blockCommentReplyRepository.destroy({
-        where: { blockCommentId: comment.id },
+   async deleteBlock(
+      blockId: number,
+      authorId: number,
+      deleteQuestions: boolean = true,
+   ) {
+      const block = await this.blockRepository.findOne({
+         where: { id: blockId, authorId },
       });
-    }
 
-    if (block.questions && deleteQuestions) {
-      block.questions.forEach((question) => {
-        this.questionsService.deleteQuestion(question.id, question.authorId);
+      if (!block) {
+         throw new HttpException('Блок не найден', HttpStatus.NOT_FOUND);
+      }
+
+      const comment = await this.blockCommentRepository.findOne({
+         where: { blockId },
       });
-    }
 
-    return `Блок с id: ${blockId} удален`;
-  }
+      await this.blockRepository.destroy({ where: { id: blockId } });
+      await this.defaultBlockInfoRepository.destroy({ where: { blockId } });
+      await this.testBlockInfoRepository.destroy({ where: { blockId } });
+      await this.blockUUIRepository.destroy({ where: { blockId } });
+      await this.banBlockRepository.destroy({ where: { blockId } });
+      await this.blockCommentRepository.destroy({ where: { blockId } });
 
-  async changeDefaultBlockInfo(
-    blockId: number,
-    interviewCompany: string = null,
-  ) {
-    const blockInfo = await this.defaultBlockInfoRepository.findOrCreate({
-      where: { blockId },
-    });
+      if (comment) {
+         await this.blockCommentReplyRepository.destroy({
+            where: { blockCommentId: comment.id },
+         });
+      }
 
-    blockInfo[0].interviewCompany = interviewCompany;
-    return blockInfo[0].save();
-  }
+      if (block.questions && deleteQuestions) {
+         block.questions.forEach((question) => {
+            this.questionsService.deleteQuestion(
+               question.id,
+               question.authorId,
+            );
+         });
+      }
 
-  async changeBlockQuestions(blockId: number, questions: string[]) {
-    await this.deleteQuestions(blockId);
-    await this.createQuestions(questions, blockId);
-  }
+      return `Блок с id: ${blockId} удален`;
+   }
 
-  async commentBlock(dto: CreateBlockCommentDto) {
-    const comment = await this.blockCommentRepository.create(dto);
-    return comment;
-  }
-
-  async changeCommentBlock(commentId: number, authorId: number, text: string) {
-    const comment = await this.blockCommentRepository.findOne({
-      where: { id: commentId, authorId },
-    });
-
-    if (!comment) {
-      throw new HttpException('Не найден комментарий', HttpStatus.BAD_REQUEST);
-    }
-
-    comment.text = text;
-    return comment.save();
-  }
-
-  async replyCommentBlock(dto: CreateBlockCommentReplyDto) {
-    const reply = await this.blockCommentReplyRepository.create(dto);
-    return reply;
-  }
-
-  async changeCommentBlockReply(
-    replyId: number,
-    authorId: number,
-    text: string,
-  ) {
-    const reply = await this.blockCommentReplyRepository.findOne({
-      where: { id: replyId, authorId },
-    });
-
-    if (!reply) {
-      throw new HttpException(
-        'Не найден ответ на комментарий',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    reply.text = text;
-    return reply.save();
-  }
-
-  async viewBlock(dto: CreateBUUIDto) {
-    const info = await this.blockUUIRepository.findOne({
-      where: { ...dto },
-      include: { all: true },
-    });
-
-    if (!info) {
-      await this.incBlockParams(dto.blockId, 'viewes');
-      await this.blockUUIRepository.create({ ...dto, view: true });
-    }
-
-    return true;
-  }
-
-  async doneBlock(dto: CreateBUUIDto) {
-    const info = await this.blockUUIRepository.findOne({
-      where: { ...dto },
-      include: { all: true },
-    });
-
-    if (!info) {
-      await this.blockUUIRepository.create({
-        ...dto,
-        view: true,
-        done: true,
+   async changeDefaultBlockInfo(
+      blockId: number,
+      interviewCompany: string = null,
+   ) {
+      const blockInfo = await this.defaultBlockInfoRepository.findOrCreate({
+         where: { blockId },
       });
+
+      blockInfo[0].interviewCompany = interviewCompany;
+      return blockInfo[0].save();
+   }
+
+   async changeBlockQuestions(blockId: number, questions: string[]) {
+      await this.deleteQuestions(blockId);
+      await this.createQuestions(questions, blockId);
+   }
+
+   async commentBlock(dto: CreateBlockCommentDto) {
+      const comment = await this.blockCommentRepository.create(dto);
+      return comment;
+   }
+
+   async changeCommentBlock(commentId: number, authorId: number, text: string) {
+      const comment = await this.blockCommentRepository.findOne({
+         where: { id: commentId, authorId },
+      });
+
+      if (!comment) {
+         throw new HttpException(
+            'Не найден комментарий',
+            HttpStatus.BAD_REQUEST,
+         );
+      }
+
+      comment.text = text;
+      return comment.save();
+   }
+
+   async replyCommentBlock(dto: CreateBlockCommentReplyDto) {
+      const reply = await this.blockCommentReplyRepository.create(dto);
+      return reply;
+   }
+
+   async changeCommentBlockReply(
+      replyId: number,
+      authorId: number,
+      text: string,
+   ) {
+      const reply = await this.blockCommentReplyRepository.findOne({
+         where: { id: replyId, authorId },
+      });
+
+      if (!reply) {
+         throw new HttpException(
+            'Не найден ответ на комментарий',
+            HttpStatus.BAD_REQUEST,
+         );
+      }
+
+      reply.text = text;
+      return reply.save();
+   }
+
+   async viewBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (!info) {
+         await this.incBlockParams(dto.blockId, 'viewes');
+         await this.blockUUIRepository.create({ ...dto, view: true });
+      }
 
       return true;
-    }
+   }
 
-    info.done = true;
-    return info.save();
-  }
-
-  async likeBlock(dto: CreateBUUIDto) {
-    const info = await this.blockUUIRepository.findOne({
-      where: { ...dto },
-      include: { all: true },
-    });
-
-    if (!info?.isLike) {
-      await this.incBlockParams(dto.blockId, 'likes');
-    }
-
-    if (info?.isDislike) {
-      await this.decBlockParams(dto.blockId, 'dislikes');
-    }
-
-    if (!info) {
-      await this.blockUUIRepository.create({
-        ...dto,
-        view: true,
-        isLike: true,
-      });
-      await this.incBlockParams(dto.blockId, 'viewes');
-
-      return true;
-    }
-
-    info.isLike = true;
-    info.isDislike = false;
-    return info.save();
-  }
-
-  async dislikeBlock(dto: CreateBUUIDto) {
-    const info = await this.blockUUIRepository.findOne({
-      where: { ...dto },
-      include: { all: true },
-    });
-
-    if (!info?.isDislike) {
-      await this.incBlockParams(dto.blockId, 'dislikes');
-    }
-
-    if (info?.isLike) {
-      await this.decBlockParams(dto.blockId, 'likes');
-    }
-
-    if (!info) {
-      await this.blockUUIRepository.create({
-        ...dto,
-        view: true,
-        isDislike: true,
-      });
-      await this.incBlockParams(dto.blockId, 'viewes');
-
-      return true;
-    }
-
-    info.isDislike = true;
-    info.isLike = false;
-    return info.save();
-  }
-
-  private async createQuestions(questions: string[], blockId: number) {
-    questions.forEach(async (item) => {
-      await this.blockQuestionRepository.create({
-        blockId,
-        questionId: +item,
-      });
-    });
-  }
-
-  private async deleteQuestions(blockId: number) {
-    const questions = await this.blockQuestionRepository.destroy({
-      where: { blockId },
-    });
-
-    return questions;
-  }
-
-  private async incBlockParams(
-    blockId: number,
-    param: 'likes' | 'dislikes' | 'viewes',
-  ) {
-    const block = await this.blockRepository.findOne({
-      where: { id: blockId },
-      include: { all: true },
-    });
-
-    block[param] = block[param] + 1;
-    return block.save();
-  }
-
-  private async decBlockParams(
-    blockId: number,
-    param: 'likes' | 'dislikes' | 'viewes',
-  ) {
-    const block = await this.blockRepository.findOne({
-      where: { id: blockId },
-      include: { all: true },
-    });
-
-    block[param] = block[param] - 1;
-    return block.save();
-  }
-
-  private async isQuestionsCreated(
-    questions: string[],
-    isTest: boolean = false,
-  ) {
-    if (!questions.length) {
-      throw new HttpException('Вопросы не найдены', HttpStatus.NOT_FOUND);
-    }
-
-    for (let item of questions) {
-      const question = await this.questionRepository.findOne({
-        where: { id: +item },
-        include: { all: true },
+   async doneBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
       });
 
-      if (!question) {
-        throw new HttpException(
-          `Вопрос с id: ${item} не найден`,
-          HttpStatus.NOT_FOUND,
-        );
+      if (!info) {
+         await this.blockUUIRepository.create({
+            ...dto,
+            view: true,
+            done: true,
+         });
+
+         return true;
       }
 
-      if (isTest && !question.testQuestionInfo) {
-        throw new HttpException(
-          `Вопрос с id: ${item} не является тестовым`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    }
+      info.done = true;
+      return info.save();
+   }
 
-    return true;
-  }
+   async likeBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (!info?.isLike) {
+         await this.incBlockParams(dto.blockId, 'likes');
+      }
+
+      if (info?.isDislike) {
+         await this.decBlockParams(dto.blockId, 'dislikes');
+      }
+
+      if (!info) {
+         await this.blockUUIRepository.create({
+            ...dto,
+            view: true,
+            isLike: true,
+         });
+         await this.incBlockParams(dto.blockId, 'viewes');
+
+         return true;
+      }
+
+      info.isLike = true;
+      info.isDislike = false;
+      return info.save();
+   }
+
+   async dislikeBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (!info?.isDislike) {
+         await this.incBlockParams(dto.blockId, 'dislikes');
+      }
+
+      if (info?.isLike) {
+         await this.decBlockParams(dto.blockId, 'likes');
+      }
+
+      if (!info) {
+         await this.blockUUIRepository.create({
+            ...dto,
+            view: true,
+            isDislike: true,
+         });
+         await this.incBlockParams(dto.blockId, 'viewes');
+
+         return true;
+      }
+
+      info.isDislike = true;
+      info.isLike = false;
+      return info.save();
+   }
+
+   private async createQuestions(questions: string[], blockId: number) {
+      questions.forEach(async (item) => {
+         await this.blockQuestionRepository.create({
+            blockId,
+            questionId: +item,
+         });
+      });
+   }
+
+   private async deleteQuestions(blockId: number) {
+      const questions = await this.blockQuestionRepository.destroy({
+         where: { blockId },
+      });
+
+      return questions;
+   }
+
+   private async incBlockParams(
+      blockId: number,
+      param: 'likes' | 'dislikes' | 'viewes',
+   ) {
+      const block = await this.blockRepository.findOne({
+         where: { id: blockId },
+         include: { all: true },
+      });
+
+      block[param] = block[param] + 1;
+      return block.save();
+   }
+
+   private async decBlockParams(
+      blockId: number,
+      param: 'likes' | 'dislikes' | 'viewes',
+   ) {
+      const block = await this.blockRepository.findOne({
+         where: { id: blockId },
+         include: { all: true },
+      });
+
+      block[param] = block[param] - 1;
+      return block.save();
+   }
+
+   private async isQuestionsCreated(
+      questions: string[],
+      isTest: boolean = false,
+   ) {
+      if (!questions.length) {
+         throw new HttpException('Вопросы не найдены', HttpStatus.NOT_FOUND);
+      }
+
+      for (let item of questions) {
+         const question = await this.questionRepository.findOne({
+            where: { id: +item },
+            include: { all: true },
+         });
+
+         if (!question) {
+            throw new HttpException(
+               `Вопрос с id: ${item} не найден`,
+               HttpStatus.NOT_FOUND,
+            );
+         }
+
+         if (isTest && !question.testQuestionInfo) {
+            throw new HttpException(
+               `Вопрос с id: ${item} не является тестовым`,
+               HttpStatus.BAD_REQUEST,
+            );
+         }
+      }
+
+      return true;
+   }
 }
