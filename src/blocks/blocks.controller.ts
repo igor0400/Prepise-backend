@@ -21,162 +21,171 @@ import { CreateBlockDto } from './dto/create-block.dto';
 
 @Controller('blocks')
 export class BlocksController {
-  constructor(private blocksService: BlocksService) {}
+   constructor(private blocksService: BlocksService) {}
 
-  @Get()
-  getAllBlocks(
-    @Query('limit') limit: string,
-    @Query('offset') offset: string,
-    @Query('search') search: string,
-  ) {
-    return this.blocksService.getAllBlocks(+limit, +offset, search);
-  }
+   @Get()
+   getAllBlocks(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('search') search: string,
+   ) {
+      return this.blocksService.getAllBlocks(+limit, +offset, search);
+   }
 
-  @Get(':id')
-  async getBlockById(@Param('id', ParseIntPipe) blockId: number) {
-    const block = await this.blocksService.getBlockById(blockId);
+   @Get(':id')
+   async getBlockById(@Param('id', ParseIntPipe) blockId: number) {
+      const block = await this.blocksService.getBlockById(blockId);
 
-    if (block) {
-      return block;
-    } else {
-      return `Блок с id: ${blockId} не найден`;
-    }
-  }
+      if (block) {
+         return block;
+      } else {
+         return `Блок с id: ${blockId} не найден`;
+      }
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('block')
-  async createBlock(@Body() dto: CreateBlockDto, @Req() req: CustomReq) {
-    return this.blocksService.createBlock({
-      ...dto,
-      authorId: +req.user.sub,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('default-block')
+   async createBlock(@Body() dto: CreateBlockDto, @Req() req: CustomReq) {
+      return this.blocksService.createBlock({
+         ...dto,
+         authorId: +req.user.sub,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('test-block')
-  createTestBlock(@Body() dto: CreateBlockDto, @Req() req: CustomReq) {
-    return this.blocksService.createBlock({
-      ...dto,
-      authorId: +req.user.sub,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('test-block')
+   createTestBlock(@Body() dto: CreateBlockDto, @Req() req: CustomReq) {
+      return this.blocksService.createBlock({
+         ...dto,
+         authorId: +req.user.sub,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  changeBlockInfo(
-    @Param('id', ParseIntPipe) blockId: number,
-    @Body() dto: ChangeBlockDto,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.changeBlockInfo(blockId, +req.user.sub, dto);
-  }
+   @UseGuards(JwtAuthGuard)
+   @Patch(':id')
+   changeBlockInfo(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Body() dto: ChangeBlockDto,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.changeBlockInfo(blockId, +req.user.sub, dto);
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  deleteBlock(
-    @Param('id', ParseIntPipe) blockId: number,
-    @Req() req: CustomReq,
-    @Body('deleteQuestions') deleteQuestions: boolean,
-  ) {
-    return this.blocksService.deleteBlock(
-      blockId,
-      +req.user.sub,
-      deleteQuestions ?? true,
-    );
-  }
+   @UseGuards(JwtAuthGuard)
+   @Delete(':id')
+   deleteBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+      @Body('deleteQuestions') deleteQuestions: boolean,
+   ) {
+      return this.blocksService.deleteBlock(
+         blockId,
+         +req.user.sub,
+         deleteQuestions ?? true,
+      );
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/comment/:id')
-  commentBlock(
-    @Body() dto: CreateBlockCommentDto,
-    @Param('id', ParseIntPipe) blockId: number,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.commentBlock({
-      ...dto,
-      authorId: +req.user.sub,
-      blockId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/comment/:id')
+   commentBlock(
+      @Body() dto: CreateBlockCommentDto,
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.commentBlock({
+         ...dto,
+         authorId: +req.user.sub,
+         blockId,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('comment/:id')
-  changeCommentQuestion(
-    @Param('id', ParseIntPipe) commentId: number,
-    @Body('text') text: string,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.changeCommentBlock(
-      commentId,
-      +req.user.sub,
-      text,
-    );
-  }
+   @UseGuards(JwtAuthGuard)
+   @Patch('comment/:id')
+   changeCommentQuestion(
+      @Param('id', ParseIntPipe) commentId: number,
+      @Body('text') text: string,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.changeCommentBlock(
+         commentId,
+         +req.user.sub,
+         text,
+      );
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/reply/comment/:id')
-  replyCommentBlock(
-    @Body() dto: CreateBlockCommentReplyDto,
-    @Param('id', ParseIntPipe) blockCommentId: number,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.replyCommentBlock({
-      ...dto,
-      authorId: +req.user.sub,
-      blockCommentId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/reply/comment/:id')
+   replyCommentBlock(
+      @Body() dto: CreateBlockCommentReplyDto,
+      @Param('id', ParseIntPipe) blockCommentId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.replyCommentBlock({
+         ...dto,
+         authorId: +req.user.sub,
+         blockCommentId,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('comment-reply/:id')
-  changeCommentBlockReply(
-    @Param('id', ParseIntPipe) commentId: number,
-    @Body('text') text: string,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.changeCommentBlockReply(
-      commentId,
-      +req.user.sub,
-      text,
-    );
-  }
+   @UseGuards(JwtAuthGuard)
+   @Patch('comment-reply/:id')
+   changeCommentBlockReply(
+      @Param('id', ParseIntPipe) commentId: number,
+      @Body('text') text: string,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.changeCommentBlockReply(
+         commentId,
+         +req.user.sub,
+         text,
+      );
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/view/:id')
-  viewBlock(@Param('id', ParseIntPipe) blockId: number, @Req() req: CustomReq) {
-    return this.blocksService.viewBlock({
-      userId: +req.user.sub,
-      blockId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/view/:id')
+   viewBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.viewBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/done/:id')
-  doneBlock(@Req() req: CustomReq, @Param('id', ParseIntPipe) blockId: number) {
-    return this.blocksService.doneBlock({
-      userId: +req.user.sub,
-      blockId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/done/:id')
+   doneBlock(
+      @Req() req: CustomReq,
+      @Param('id', ParseIntPipe) blockId: number,
+   ) {
+      return this.blocksService.doneBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/like/:id')
-  likeBlock(@Param('id', ParseIntPipe) blockId: number, @Req() req: CustomReq) {
-    return this.blocksService.likeBlock({
-      userId: +req.user.sub,
-      blockId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/like/:id')
+   likeBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.likeBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/dislike/:id')
-  dislikeBlock(
-    @Param('id', ParseIntPipe) blockId: number,
-    @Req() req: CustomReq,
-  ) {
-    return this.blocksService.dislikeBlock({
-      userId: +req.user.sub,
-      blockId,
-    });
-  }
+   @UseGuards(JwtAuthGuard)
+   @Post('/dislike/:id')
+   dislikeBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.dislikeBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
 }
