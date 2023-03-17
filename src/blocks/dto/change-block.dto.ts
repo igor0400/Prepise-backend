@@ -1,19 +1,11 @@
-import {
-   IsArray,
-   IsEnum,
-   IsNumber,
-   IsObject,
-   IsOptional,
-   IsString,
-   MaxLength,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class ChangeBlockDto {
    readonly authorId: number;
 
    @IsOptional()
    @IsString()
-   @MaxLength(100)
+   @MaxLength(30, { message: 'поле title должно быть короче 30 символов' })
    readonly title?: string;
 
    @IsOptional()

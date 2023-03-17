@@ -16,7 +16,7 @@ export class ChangeQuestionDto {
 
    @IsOptional()
    @IsString()
-   @MaxLength(100)
+   @MaxLength(30, { message: 'поле title должно быть короче 30 символов' })
    readonly title?: string;
 
    @IsOptional()
@@ -29,7 +29,9 @@ export class ChangeQuestionDto {
    readonly content?: string;
 
    @IsOptional()
-   @IsEnum(['true', 'false'], { message: 'Поле commented должно быть true или false' })
+   @IsEnum(['true', 'false'], {
+      message: 'Поле commented должно быть true или false',
+   })
    readonly commented?: 'true' | 'false';
 
    @IsOptional()
