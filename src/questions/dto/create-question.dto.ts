@@ -12,12 +12,12 @@ export class CreateQuestionDto {
 
    @IsNotEmpty()
    @IsString()
-   @MaxLength(30, { message: 'поле title должно быть короче 30 символов' })
+   @MaxLength(50, { message: 'Поле title должно быть длиннее 50 символов' })
    readonly title: string;
 
    @IsOptional()
    @IsString()
-   @MaxLength(100)
+   @MaxLength(300)
    readonly description?: string;
 
    @IsNotEmpty()

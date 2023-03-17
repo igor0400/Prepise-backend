@@ -16,10 +16,10 @@ module.exports = {
             allowNull: false,
          },
          title: {
-            type: Sequelize.STRING(30),
+            type: Sequelize.STRING(50),
             allowNull: false,
          },
-         description: Sequelize.STRING(100),
+         description: Sequelize.STRING(300),
          type: {
             type: Sequelize.ENUM('default', 'test'),
             allowNull: false,
