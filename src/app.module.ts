@@ -94,6 +94,11 @@ import { Companies } from './data/models/companies.model';
          username: process.env.MYSQL_USERNAME,
          password: process.env.MYSQL_PASSWORD,
          database: process.env.MYSQL_DBNAME,
+         pool: {
+            max: 10,
+            min: 0,
+            idle: 10000,
+         },
          models: [
             User,
             UserSession,
