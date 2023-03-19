@@ -21,7 +21,7 @@ export class ChangeQuestionDto {
 
    @IsOptional()
    @IsString()
-   @MaxLength(300)
+   @MaxLength(100)
    readonly description?: string;
 
    @IsOptional()

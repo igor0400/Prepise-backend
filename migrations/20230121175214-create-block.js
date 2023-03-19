@@ -19,7 +19,7 @@ module.exports = {
             type: Sequelize.STRING(50),
             allowNull: false,
          },
-         description: Sequelize.STRING(300),
+         description: Sequelize.STRING(100),
          type: {
             type: Sequelize.ENUM('default', 'test'),
             allowNull: false,

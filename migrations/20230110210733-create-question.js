@@ -33,7 +33,7 @@ module.exports = {
             allowNull: false,
          },
          description: {
-            type: Sequelize.STRING(300),
+            type: Sequelize.STRING(100),
          },
          content: {
             type: Sequelize.TEXT,
