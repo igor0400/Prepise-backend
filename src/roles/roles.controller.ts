@@ -1,12 +1,12 @@
 import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Param,
-  Patch,
-  UseGuards,
-  ParseIntPipe,
+   Body,
+   Controller,
+   Get,
+   Post,
+   Param,
+   Patch,
+   UseGuards,
+   ParseIntPipe,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -18,30 +18,34 @@ import { ChangeRoleDto } from './dto/change-role.dto';
 @UseGuards(RolesGuard)
 @Controller('roles')
 export class RolesController {
-  constructor(private roleService: RolesService) {}
-  @Get()
-  getAllRoles() {
-    return this.roleService.getAllRoles();
-  }
+   constructor(private roleService: RolesService) {}
 
-  @Get(':id')
-  getRoleById(@Param('id', ParseIntPipe) roleId: number) {
-    const role = this.roleService.getRoleById(+roleId);
+   @Get()
+   getAllRoles() {
+      return this.roleService.getAllRoles();
+   }
 
-    if (role) {
-      return role;
-    } else {
-      return `Роль с id: ${roleId} не найдена`;
-    }
-  }
+   @Get(':id')
+   getRoleById(@Param('id', ParseIntPipe) roleId: number) {
+      const role = this.roleService.getRoleById(+roleId);
 
-  @Post()
-  create(@Body() dto: CreateRoleDto) {
-    return this.roleService.createRole(dto);
-  }
+      if (role) {
+         return role;
+      } else {
+         return `Роль с id: ${roleId} не найдена`;
+      }
+   }
 
-  @Patch(':id')
-  changeRole(@Body() dto: ChangeRoleDto, @Param('id', ParseIntPipe) roleId: number) {
-    return this.roleService.changeRole({ ...dto, roleId });
-  }
+   @Post()
+   create(@Body() dto: CreateRoleDto) {
+      return this.roleService.createRole(dto);
+   }
+
+   @Patch(':id')
+   changeRole(
+      @Body() dto: ChangeRoleDto,
+      @Param('id', ParseIntPipe) roleId: number,
+   ) {
+      return this.roleService.changeRole({ ...dto, roleId });
+   }
 }
