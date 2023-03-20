@@ -85,6 +85,23 @@ export class QuestionsService {
             title: {
                [Op.like]: `%${search}%`,
             },
+            type: 'default',
+         },
+         order: ['id'],
+      });
+      return questions;
+   }
+
+   async getAllTests(limit: number, offset: number, search: string = '') {
+      const questions = await this.questionRepository.findAll({
+         offset: offset || 0,
+         limit: limit || 100,
+         include: this.questionsInclude,
+         where: {
+            title: {
+               [Op.like]: `%${search}%`,
+            },
+            type: 'test',
          },
          order: ['id'],
       });

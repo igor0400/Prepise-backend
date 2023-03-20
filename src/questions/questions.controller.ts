@@ -35,13 +35,22 @@ export interface Files {
 export class QuestionsController {
    constructor(private questionsService: QuestionsService) {}
 
-   @Get()
+   @Get('default')
    getAllQuestions(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
       return this.questionsService.getAllQuestions(+limit, +offset, search);
+   }
+
+   @Get('test')
+   getAllTests(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('search') search: string,
+   ) {
+      return this.questionsService.getAllTests(+limit, +offset, search);
    }
 
    @Get(':id')
