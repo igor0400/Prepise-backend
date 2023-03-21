@@ -1,8 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Controller, Get, Query } from '@nestjs/common';
 import { DataService } from './data.service';
 
-@UseGuards(JwtAuthGuard)
 @Controller('data')
 export class DataController {
    constructor(private dataService: DataService) {}
