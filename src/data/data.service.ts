@@ -23,18 +23,9 @@ export class DataService {
    ) {}
 
    async getSections(params: Params) {
-      const { limit = 50, offset = 0, search = '' } = params;
-      const sections = await this.sectionsRepository.findAll({
-         offset: offset || 0,
-         limit: limit || 100,
-         include: { all: true },
-         where: {
-            title: {
-               [Op.like]: `%${search}%`,
-            },
-         },
-         order: ['id'],
-      });
+      const sections = await this.sectionsRepository.findAll(
+         this.getOptions(params),
+      );
 
       return sections;
    }
@@ -55,18 +46,9 @@ export class DataService {
    }
 
    async getPositions(params: Params) {
-      const { limit = 50, offset = 0, search = '' } = params;
-      const positions = await this.positionsRepository.findAll({
-         offset: offset || 0,
-         limit: limit || 100,
-         include: { all: true },
-         where: {
-            title: {
-               [Op.like]: `%${search}%`,
-            },
-         },
-         order: ['id'],
-      });
+      const positions = await this.positionsRepository.findAll(
+         this.getOptions(params),
+      );
 
       return positions;
    }
@@ -87,18 +69,9 @@ export class DataService {
    }
 
    async getCompanies(params: Params) {
-      const { limit = 50, offset = 0, search = '' } = params;
-      const companies = await this.companiesRepository.findAll({
-         offset: offset || 0,
-         limit: limit || 100,
-         include: { all: true },
-         where: {
-            title: {
-               [Op.like]: `%${search}%`,
-            },
-         },
-         order: ['id'],
-      });
+      const companies = await this.companiesRepository.findAll(
+         this.getOptions(params),
+      );
 
       return companies;
    }
@@ -142,5 +115,24 @@ export class DataService {
             where: { title: company },
          });
       }
+   }
+
+   private getOptions(params: Params) {
+      const { limit, offset, search = '' } = params;
+
+      const options: any = {
+         include: { all: true },
+         where: {
+            title: {
+               [Op.like]: `%${search}%`,
+            },
+         },
+         order: ['id'],
+      };
+
+      if (limit) options.limit = limit;
+      if (offset) options.offset = offset;
+
+      return options;
    }
 }

@@ -40,10 +40,8 @@ export class TagsService {
       private blockTagRepository: typeof BlockTag,
    ) {}
 
-   async getAllTags(limit: number, offset: number, search: string = '') {
-      const tags = await this.tagRepository.findAll({
-         offset: offset || 0,
-         limit: limit || 100,
+   async getAllTags(limit: number, offset: number = 0, search: string = '') {
+      const options: any = {
          include: { all: true },
          where: {
             name: {
@@ -51,7 +49,12 @@ export class TagsService {
             },
          },
          order: ['id'],
-      });
+      };
+
+      if (limit) options.limit = limit;
+      if (offset) options.offset = offset;
+
+      const tags = await this.tagRepository.findAll(options);
 
       return tags;
    }
