@@ -23,13 +23,27 @@ import { CreateBlockDto } from './dto/create-block.dto';
 export class BlocksController {
    constructor(private blocksService: BlocksService) {}
 
-   @Get()
-   getAllBlocks(
+   @Get('default')
+   getAllDefaultBlocks(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
-      return this.blocksService.getAllBlocks(+limit, +offset, search);
+      return this.blocksService.getAllBlocks(
+         'default',
+         +limit,
+         +offset,
+         search,
+      );
+   }
+
+   @Get('test')
+   getAllTestBlocks(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('search') search: string,
+   ) {
+      return this.blocksService.getAllBlocks('test', +limit, +offset, search);
    }
 
    @Get(':id')

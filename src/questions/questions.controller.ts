@@ -41,7 +41,12 @@ export class QuestionsController {
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
-      return this.questionsService.getAllQuestions(+limit, +offset, search);
+      return this.questionsService.getAllQuestions(
+         'default',
+         +limit,
+         +offset,
+         search,
+      );
    }
 
    @Get('test')
@@ -50,7 +55,12 @@ export class QuestionsController {
       @Query('offset') offset: string,
       @Query('search') search: string,
    ) {
-      return this.questionsService.getAllTests(+limit, +offset, search);
+      return this.questionsService.getAllQuestions(
+         'test',
+         +limit,
+         +offset,
+         search,
+      );
    }
 
    @Get(':id')

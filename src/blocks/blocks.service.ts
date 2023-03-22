@@ -83,7 +83,12 @@ export class BlocksService {
       },
    ];
 
-   async getAllBlocks(limit: number, offset: number, search: string = '') {
+   async getAllBlocks(
+      type: 'default' | 'test',
+      limit: number,
+      offset: number,
+      search: string = '',
+   ) {
       const blocks = await this.blockRepository.findAll({
          offset: offset || 0,
          limit: limit || 100,
@@ -92,6 +97,7 @@ export class BlocksService {
             title: {
                [Op.like]: `%${search}%`,
             },
+            type,
          },
          order: ['id'],
       });
