@@ -182,16 +182,18 @@ export class QuestionsController {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Post('/reply/test-question')
+   @Post('/reply/test-question/:id')
    @UseInterceptors(FilesInterceptor('file'))
    replyTestQuestion(
       @Body() dto: CreateTQRDto,
       @Req() req: CustomReq,
       @UploadedFiles() files: Express.Multer.File[],
+      @Param('id', ParseIntPipe) replyId: number,
    ) {
       return this.questionsService.replyTestQuestion(
          {
             ...dto,
+            questionId: replyId,
             authorId: +req.user.sub,
          },
          files,
