@@ -261,7 +261,7 @@ export class UsersService {
       }
 
       if (user.summary) {
-         this.filesService.deleteFile(user.summary.slice(1));
+         this.filesService.deleteFile(user.summary);
       }
 
       const summaryUrl = this.filesService.createFile(
@@ -290,8 +290,8 @@ export class UsersService {
    async changeAvatar(avatar: Express.Multer.File, userId: number) {
       const user = await this.userRepository.findByPk(userId);
 
-      if (user.avatar.slice(1, 16) !== 'avatars/default') {
-         this.filesService.deleteFile(user.avatar.slice(1));
+      if (user.avatar && user.avatar.slice(1, 16) !== 'avatars/default') {
+         this.filesService.deleteFile(user.avatar);
       }
       const avatarPath = this.filesService.createFile(
          avatar,
@@ -387,8 +387,7 @@ export class UsersService {
       gender: 'male' | 'female' = undefined,
    ) {
       if (userType === 'company') {
-        // это заготовка для будущих аватарок компаний
-         return null;
+         return '/avatars/default/companies/company.svg';
       } else {
          if (gender === 'male') {
             return `/avatars/default/users/${gender}/${
