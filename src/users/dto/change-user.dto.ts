@@ -10,21 +10,12 @@ export class ChangeUserDto {
 
   @IsOptional()
   @IsString()
-  readonly type?: 'company' | 'user';
-
-  @IsOptional()
-  @IsString()
   readonly description?: string;
 
   @IsOptional()
   @IsString()
   @MaxLength(300)
   readonly location?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  readonly summary?: string;
 
   @IsOptional()
   readonly tags?: string[] | string;

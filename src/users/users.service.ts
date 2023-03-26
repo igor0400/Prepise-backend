@@ -260,15 +260,16 @@ export class UsersService {
          }
       }
 
-      if (user.summary) {
-         this.filesService.deleteFile(user.summary);
+      if (summaryFile) {
+         if (user.summary) {
+            this.filesService.deleteFile(user.summary);
+         }
+         const summaryUrl = this.filesService.createFile(
+            summaryFile,
+            `users/${user.id}/summary`,
+         );
+         user.summary = summaryUrl;
       }
-
-      const summaryUrl = this.filesService.createFile(
-         summaryFile,
-         `users/${user.id}/summary`,
-      );
-      user.summary = summaryUrl;
 
       if (dto.tags) {
          if (user.tags) {
