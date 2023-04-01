@@ -29,11 +29,6 @@ export class AuthService {
       response: Response,
       request: Request,
    ) {
-      const userIp = request.ip;
-      const userAgent = request.headers['user-agent'];
-      const requestCopy = JSON.parse(JSON.stringify(registerRequest));
-      delete requestCopy.emailVerifyCode;
-
       const isUserCreated = await this.userService.getUserByEmail(
          registerRequest.email,
       );
@@ -53,6 +48,25 @@ export class AuthService {
          );
       }
 
+      const regData = await this.createRegiserData(
+         registerRequest,
+         response,
+         request,
+      );
+
+      return regData;
+   }
+
+   async createRegiserData(
+      registerRequest: RegisterRequest,
+      response: Response,
+      request: Request,
+   ) {
+      const userIp = request.ip;
+      const userAgent = request.headers['user-agent'];
+      const requestCopy = JSON.parse(JSON.stringify(registerRequest));
+      if (requestCopy?.emailVerifyCode) delete requestCopy.emailVerifyCode;
+
       const user = await this.userService.createUser({
          ...requestCopy,
          emailVerify: true,
@@ -70,6 +84,7 @@ export class AuthService {
       const currentUser = await this.userService.getUserByEmail(
          registerRequest.email,
       );
+
       return { accessToken, user: currentUser };
    }
 

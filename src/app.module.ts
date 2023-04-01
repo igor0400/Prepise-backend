@@ -77,6 +77,7 @@ import { DataModule } from './data/data.module';
 import { Sections } from './data/models/services.model';
 import { Positions } from './data/models/positions.model';
 import { Companies } from './data/models/companies.model';
+import { StartModule } from './start/start.module';
 
 @Module({
    imports: [
@@ -176,6 +177,7 @@ import { Companies } from './data/models/companies.model';
       AchievementsModule,
       ChatModule,
       DataModule,
+      StartModule,
    ],
 })
 export class AppModule {}
