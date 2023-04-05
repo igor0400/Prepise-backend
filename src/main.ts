@@ -3,25 +3,9 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import { ValidationPipe } from '@nestjs/common';
-import fs from 'fs';
 
 async function bootstrap() {
-   const devOption = process.env.NODE_ENV;
-
-   let app = await NestFactory.create(AppModule);
-
-   //  if (devOption === 'production') {
-   //     const domain = process.env.CLIENT_DOMAIN ?? 'prepise.com';
-
-   //     const httpsOptions = {
-   //        key: fs.readFileSync(`/etc/letsencrypt/live/${domain}/privkey.pem`),
-   //        cert: fs.readFileSync(`/etc/letsencrypt/live/${domain}/fullchain.pem`),
-   //     };
-
-   //     app = await NestFactory.create(AppModule, {
-   //        httpsOptions,
-   //     });
-   //  }
+   const app = await NestFactory.create(AppModule);
 
    const PORT = process.env.PORT ?? 5000;
 
