@@ -121,13 +121,19 @@ export class QuestionsService {
       } = dto;
 
       if (takenFiles) {
-         const { files, images } = this.filesService.createImgsAndFiles(
-            takenFiles,
-            `questions/${question.id}`,
-         );
-
-         if (images.length) this.createQImgs(images, question.id);
-         if (files.length) this.createQFiles(files, question.id);
+         try {
+            const { files, images } = this.filesService.createImgsAndFiles(
+               takenFiles,
+               `questions/${question.id}`,
+            );
+            if (images.length) this.createQImgs(images, question.id);
+            if (files.length) this.createQFiles(files, question.id);
+         } catch (e: any) {
+            await this.questionRepository.destroy({
+               where: { id: question.id },
+            });
+            throw new HttpException(e.message, e.status);
+         }
       }
 
       if (type === 'test') {
@@ -363,10 +369,7 @@ export class QuestionsService {
       });
 
       if (!comment) {
-         throw new HttpException(
-            'Не найден комментарий',
-            HttpStatus.BAD_REQUEST,
-         );
+         throw new HttpException('Не найден комментарий', HttpStatus.NOT_FOUND);
       }
 
       comment.text = text;
@@ -386,6 +389,13 @@ export class QuestionsService {
       const testQuestionReply = await this.testQuestionReplyRepository.findOne({
          where: { id: replyId, authorId },
       });
+
+      if (!testQuestionReply) {
+         throw new HttpException(
+            'Ответ на тест не найден',
+            HttpStatus.NOT_FOUND,
+         );
+      }
 
       if (takenFiles) {
          const files = this.filesService.createFiles(
@@ -431,7 +441,7 @@ export class QuestionsService {
       if (!reply) {
          throw new HttpException(
             'Не найден ответ на комментарий',
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.NOT_FOUND,
          );
       }
 
@@ -458,12 +468,19 @@ export class QuestionsService {
       });
 
       if (takenFiles) {
-         const files = this.filesService.createFiles(
-            takenFiles,
-            `test-question-replies/${testQuestionReply.id}`,
-         );
+         try {
+            const files = this.filesService.createFiles(
+               takenFiles,
+               `test-question-replies/${testQuestionReply.id}`,
+            );
 
-         if (files.length) this.createTQRFiles(files, testQuestionReply.id);
+            if (files.length) this.createTQRFiles(files, testQuestionReply.id);
+         } catch (e) {
+            await this.testQuestionReplyRepository.destroy({
+               where: { id: testQuestionReply.id },
+            });
+            throw new HttpException(e.message, e.status);
+         }
       }
 
       await this.doneQuestion({
@@ -486,7 +503,7 @@ export class QuestionsService {
       if (!testQuestionReply) {
          throw new HttpException(
             'Не найден ответ на вопрос',
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.NOT_FOUND,
          );
       }
 
