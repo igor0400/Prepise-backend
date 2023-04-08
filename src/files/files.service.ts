@@ -14,8 +14,6 @@ export class FilesService {
    defaultPath = '../../static/';
 
    createImgsAndFiles(files: Files, folderPath: string) {
-      console.log(files);
-
       const returnedFiles: { files: FileData[]; images: string[] } = {
          files: [],
          images: [],
