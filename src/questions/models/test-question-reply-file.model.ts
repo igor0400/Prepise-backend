@@ -12,6 +12,7 @@ interface TQRFCreationArgs {
    testQuestionReplyId: number;
    url: string;
    name: string;
+   size: number;
 }
 
 @Table({
@@ -48,6 +49,12 @@ export class TestQuestionReplyFile extends Model<
       allowNull: false,
    })
    name: string;
+
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   size: number;
 
    @BelongsTo(() => TestQuestionReply)
    testQuestionReply: TestQuestionReply;

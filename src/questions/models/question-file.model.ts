@@ -12,6 +12,7 @@ interface QuestionFileCreationArgs {
    questionId: number;
    url: string;
    name: string;
+   size: number;
 }
 
 @Table({ tableName: 'QUESTIONS_FILES', timestamps: false })
@@ -45,6 +46,12 @@ export class QuestionFile extends Model<
       allowNull: false,
    })
    name: string;
+
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   size: number;
 
    @BelongsTo(() => Question)
    question: Question;

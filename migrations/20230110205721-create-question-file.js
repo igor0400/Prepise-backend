@@ -23,6 +23,10 @@ module.exports = {
             type: Sequelize.STRING(1000),
             allowNull: false,
          },
+         size: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+         },
       });
    },
 

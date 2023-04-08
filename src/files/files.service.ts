@@ -7,6 +7,7 @@ import { v4 as uuid } from 'uuid';
 export interface FileData {
    url: string;
    name: string;
+   size: number;
 }
 
 @Injectable()
@@ -37,6 +38,7 @@ export class FilesService {
             returnedFiles.files.push({
                url: filePath,
                name: file.originalname,
+               size: file.size,
             });
          });
       }
@@ -57,6 +59,7 @@ export class FilesService {
       return {
          url: this.writeFile(file, folderPath),
          name: file.originalname,
+         size: file.size,
       };
    }
 
