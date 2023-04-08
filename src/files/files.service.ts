@@ -4,12 +4,22 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { v4 as uuid } from 'uuid';
 
+export interface FileData {
+   url: string;
+   name: string;
+}
+
 @Injectable()
 export class FilesService {
    defaultPath = '../../static/';
 
    createImgsAndFiles(files: Files, folderPath: string) {
-      const returnedFiles = { files: [], images: [] };
+      console.log(files);
+
+      const returnedFiles: { files: FileData[]; images: string[] } = {
+         files: [],
+         images: [],
+      };
 
       if (files.image) {
          files.image.forEach((image) => {
@@ -26,7 +36,10 @@ export class FilesService {
             this.checkFileSize(file);
 
             const filePath = this.writeFile(file, `${folderPath}/files`);
-            returnedFiles.files.push(filePath);
+            returnedFiles.files.push({
+               url: filePath,
+               name: file.originalname,
+            });
          });
       }
 
@@ -40,18 +53,21 @@ export class FilesService {
       return this.writeFile(image, folderPath);
    }
 
-   createFile(file: Express.Multer.File, folderPath: string) {
+   createFile(file: Express.Multer.File, folderPath: string): FileData {
       this.checkFileSize(file);
 
-      return this.writeFile(file, folderPath);
+      return {
+         url: this.writeFile(file, folderPath),
+         name: file.originalname,
+      };
    }
 
    createFiles(files: Express.Multer.File[], folderPath: string) {
-      const returnedFiles = [];
+      const returnedFiles: FileData[] = [];
 
       files.forEach((file) => {
-         const filePath = this.createFile(file, `${folderPath}/files`);
-         returnedFiles.push(filePath);
+         const fileData = this.createFile(file, `${folderPath}/files`);
+         returnedFiles.push(fileData);
       });
 
       return returnedFiles;
@@ -123,7 +139,7 @@ export class FilesService {
 
    private checkFormat(imageFormat: string) {
       const fileType = imageFormat.split('/')[0];
-      
+
       if (fileType !== 'image') {
          throw new HttpException(
             `Формат изображения типа ${fileType} не поддерживается`,

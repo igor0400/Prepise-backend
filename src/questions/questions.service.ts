@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { BanQuestion } from 'src/banned/models/banned-questions.model';
-import { FilesService } from 'src/files/files.service';
+import { FileData, FilesService } from 'src/files/files.service';
 import { ChangeQuestionDto } from './dto/change-question.dto';
-import { CreateImgAndFileDto } from './dto/create-img-file.dto';
+import { CreateFileDto } from './dto/create-file.dto';
 import { CreateQuestionCommentReplyDto } from './dto/create-question-comment-reply.dto';
 import { CreateQuestionCommentDto } from './dto/create-question-comment.dto';
 import { CreateQUUIDto } from './dto/create-question-used-user-info.dto';
@@ -29,6 +29,7 @@ import { UserInfo } from 'src/users/models/users-info.model';
 import { Block } from 'src/blocks/models/block.model';
 import { Op } from 'sequelize';
 import { DataService } from 'src/data/data.service';
+import { CreateImgDto } from './dto/create-img.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -607,34 +608,34 @@ export class QuestionsService {
    }
 
    private createQImgs(imgs: string[], questionId: number) {
-      const imgsArr: CreateImgAndFileDto[] = imgs.map((img) => ({
+      const imgsArr: CreateImgDto[] = imgs.map((img) => ({
          url: img,
          questionId,
       }));
 
-      imgsArr.forEach(async (img: CreateImgAndFileDto) => {
+      imgsArr.forEach(async (img: CreateImgDto) => {
          await this.questionImgRepository.create(img);
       });
 
       return imgsArr;
    }
 
-   private createQFiles(files: string[], questionId: number) {
-      const filesArr: CreateImgAndFileDto[] = files.map((file) => ({
-         url: file,
+   private createQFiles(files: FileData[], questionId: number) {
+      const filesArr: CreateFileDto[] = files.map((file) => ({
+         ...file,
          questionId,
       }));
 
-      filesArr.forEach(async (file: CreateImgAndFileDto) => {
+      filesArr.forEach(async (file: CreateFileDto) => {
          await this.questionFileRepository.create(file);
       });
 
       return filesArr;
    }
 
-   private createTQRFiles(files: string[], testQuestionReplyId: number) {
+   private createTQRFiles(files: FileData[], testQuestionReplyId: number) {
       const filesArr: CreateTQRFDto[] = files.map((file) => ({
-         url: file,
+         ...file,
          testQuestionReplyId,
       }));
 

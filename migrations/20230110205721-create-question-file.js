@@ -2,27 +2,31 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    return queryInterface.createTable('QUESTIONS_FILES', {
-      id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        unique: true,
-        primaryKey: true,
-      },
-      questionId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      url: {
-        type: Sequelize.STRING(1000),
-        allowNull: false,
-      },
-    });
-  },
+   async up(queryInterface, Sequelize) {
+      return queryInterface.createTable('QUESTIONS_FILES', {
+         id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            autoIncrement: true,
+            unique: true,
+            primaryKey: true,
+         },
+         questionId: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+         },
+         url: {
+            type: Sequelize.STRING(1000),
+            allowNull: false,
+         },
+         name: {
+            type: Sequelize.STRING(1000),
+            allowNull: false,
+         },
+      });
+   },
 
-  async down(queryInterface) {
-    return queryInterface.dropTable('QUESTIONS_FILES');
-  },
+   async down(queryInterface) {
+      return queryInterface.dropTable('QUESTIONS_FILES');
+   },
 };

@@ -264,7 +264,7 @@ export class UsersService {
          if (user.summary) {
             this.filesService.deleteFile(user.summary);
          }
-         const summaryUrl = this.filesService.createFile(
+         const { url: summaryUrl } = this.filesService.createFile(
             summaryFile,
             `users/${user.id}/summary`,
          );
@@ -294,7 +294,7 @@ export class UsersService {
       if (user.avatar && user.avatar.slice(1, 16) !== 'avatars/default') {
          this.filesService.deleteFile(user.avatar);
       }
-      const avatarPath = this.filesService.createFile(
+      const { url: avatarPath } = this.filesService.createFile(
          avatar,
          `users/${userId}/avatar`,
       );
