@@ -305,7 +305,7 @@ export class UsersService {
 
    async createUserFollowingUsers(dto: CreateUserFollowingUsersDto) {
       const { userId, followedUsers } = dto;
-      const createdTags = [];
+      const createdUsers = [];
       const userFollows = await this.userFollowingUserRepository.findAll({
          where: { userId },
       });
@@ -316,7 +316,7 @@ export class UsersService {
                .map((item) => item.followedUserId)
                .includes(+followedUserId)
          ) {
-            createdTags.push(
+            createdUsers.push(
                await this.userFollowingUserRepository.create({
                   userId,
                   followedUserId: +followedUserId,
@@ -325,15 +325,15 @@ export class UsersService {
          }
       }
 
-      return createdTags;
+      return createdUsers;
    }
 
    async deleteUserFollowingUsers(dto: DeleteUserFollowingUsersDto) {
-      const deletedTags = [];
+      const deletedUsers = [];
       const { followedUsers, userId } = dto;
 
       for (let followedUserId of followedUsers) {
-         deletedTags.push({
+         deletedUsers.push({
             [followedUserId]: await this.userFollowingUserRepository.destroy({
                where: {
                   userId,
@@ -343,7 +343,7 @@ export class UsersService {
          });
       }
 
-      return deletedTags;
+      return deletedUsers;
    }
 
    async changePassword(dto: ChangePasswordDto) {

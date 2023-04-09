@@ -45,6 +45,20 @@ export class UsersController {
    }
 
    @UseGuards(JwtAuthGuard)
+   @Patch()
+   @UseInterceptors(FileInterceptor('summary'))
+   changeUser(
+      @Body() dto: ChangeUserDto,
+      @Req() req: CustomReq,
+      @UploadedFile() summary: Express.Multer.File,
+   ) {
+      return this.usersService.changeUser(
+         { ...dto, userId: +req.user.sub },
+         summary,
+      );
+   }
+   
+   @UseGuards(JwtAuthGuard)
    @Get('personal')
    async getUserPersonal(@Req() req: CustomReq) {
       const id = +req.user.sub;
@@ -57,43 +71,11 @@ export class UsersController {
       }
    }
 
-   @Get(':id')
-   async getReducedUserById(@Param('id', ParseIntPipe) id: number) {
-      const user = await this.usersService.getReducedUserById(id, false);
-
-      if (user) {
-         return user;
-      } else {
-         return `Пользователь с id: ${id} не найден`;
-      }
-   }
-
-   @Roles('ADMIN')
-   @UseGuards(RolesGuard)
-   @Delete(':id')
-   deleteUserById(@Param('id', ParseIntPipe) id: number) {
-      return this.usersService.deleteUserById(id);
-   }
-
    @Roles('ADMIN')
    @UseGuards(RolesGuard)
    @Post('add-role')
    addRole(@Body() dto: AddRoleDto) {
       return this.usersService.addRole(dto);
-   }
-
-   @UseGuards(JwtAuthGuard)
-   @Patch()
-   @UseInterceptors(FileInterceptor('summary'))
-   changeUser(
-      @Body() dto: ChangeUserDto,
-      @Req() req: CustomReq,
-      @UploadedFile() summary: Express.Multer.File,
-   ) {
-      return this.usersService.changeUser(
-         { ...dto, userId: +req.user.sub },
-         summary,
-      );
    }
 
    @UseGuards(JwtAuthGuard)
@@ -185,5 +167,23 @@ export class UsersController {
          ...dto,
          userId: +req.user.sub,
       });
+   }
+
+   @Get(':id')
+   async getReducedUserById(@Param('id', ParseIntPipe) id: number) {
+      const user = await this.usersService.getReducedUserById(id, false);
+
+      if (user) {
+         return user;
+      } else {
+         return `Пользователь с id: ${id} не найден`;
+      }
+   }
+
+   @Roles('ADMIN')
+   @UseGuards(RolesGuard)
+   @Delete(':id')
+   deleteUserById(@Param('id', ParseIntPipe) id: number) {
+      return this.usersService.deleteUserById(id);
    }
 }
