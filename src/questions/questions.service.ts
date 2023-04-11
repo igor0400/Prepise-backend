@@ -68,7 +68,10 @@ export class QuestionsService {
       { model: QuestionFile },
       { model: BanQuestion },
       { model: QuestionUsedUserInfo },
-      { model: QuestionComment, include: [QuestionCommentReply] },
+      {
+         model: QuestionComment,
+         include: [{ model: QuestionCommentReply, include: [User] }, User],
+      },
       { model: Tag },
       { model: Block },
       {
