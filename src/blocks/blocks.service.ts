@@ -344,6 +344,20 @@ export class BlocksService {
       return info.save();
    }
 
+   async deleteLikeBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (info?.isLike) {
+         info.isLike = false;
+         await this.decBlockParams(dto.blockId, 'likes');
+      }
+
+      return info?.save();
+   }
+
    async dislikeBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
@@ -372,6 +386,20 @@ export class BlocksService {
       info.isDislike = true;
       info.isLike = false;
       return info.save();
+   }
+
+   async deleteDislikeBlock(dto: CreateBUUIDto) {
+      const info = await this.blockUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (info?.isDislike) {
+         info.isDislike = false;
+         await this.decBlockParams(dto.blockId, 'dislikes');
+      }
+
+      return info?.save();
    }
 
    private async createQuestions(questions: string[], blockId: number) {

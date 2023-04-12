@@ -194,12 +194,36 @@ export class BlocksController {
    }
 
    @UseGuards(JwtAuthGuard)
+   @Delete('/like/:id')
+   deleteLikeBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.deleteLikeBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
+
+   @UseGuards(JwtAuthGuard)
    @Post('/dislike/:id')
    dislikeBlock(
       @Param('id', ParseIntPipe) blockId: number,
       @Req() req: CustomReq,
    ) {
       return this.blocksService.dislikeBlock({
+         userId: +req.user.sub,
+         blockId,
+      });
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Delete('/dislike/:id')
+   deleteDislikeBlock(
+      @Param('id', ParseIntPipe) blockId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.blocksService.deleteDislikeBlock({
          userId: +req.user.sub,
          blockId,
       });

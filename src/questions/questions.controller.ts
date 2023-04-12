@@ -322,12 +322,36 @@ export class QuestionsController {
    }
 
    @UseGuards(JwtAuthGuard)
+   @Delete('/like/:id')
+   deleteLikeQuestion(
+      @Param('id', ParseIntPipe) questionId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.questionsService.deleteLikeQuestion({
+         userId: +req.user.sub,
+         questionId,
+      });
+   }
+
+   @UseGuards(JwtAuthGuard)
    @Post('/dislike/:id')
    dislikeQuestion(
       @Param('id', ParseIntPipe) questionId: number,
       @Req() req: CustomReq,
    ) {
       return this.questionsService.dislikeQuestion({
+         userId: +req.user.sub,
+         questionId,
+      });
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Delete('/dislike/:id')
+   deleteDislikeQuestion(
+      @Param('id', ParseIntPipe) questionId: number,
+      @Req() req: CustomReq,
+   ) {
+      return this.questionsService.deleteDislikeQuestion({
          userId: +req.user.sub,
          questionId,
       });

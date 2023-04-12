@@ -580,6 +580,20 @@ export class QuestionsService {
       return info.save();
    }
 
+   async deleteLikeQuestion(dto: CreateQUUIDto) {
+      const info = await this.questionUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (info?.isLike) {
+         info.isLike = false;
+         await this.decQuestionParams(dto.questionId, 'likes');
+      }
+
+      return info?.save();
+   }
+
    async dislikeQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },
@@ -608,6 +622,20 @@ export class QuestionsService {
       info.isDislike = true;
       info.isLike = false;
       return info.save();
+   }
+
+   async deleteDislikeQuestion(dto: CreateQUUIDto) {
+      const info = await this.questionUUIRepository.findOne({
+         where: { ...dto },
+         include: { all: true },
+      });
+
+      if (info?.isDislike) {
+         info.isDislike = false;
+         await this.decQuestionParams(dto.questionId, 'dislikes');
+      }
+
+      return info?.save();
    }
 
    private createQImgs(imgs: string[], questionId: number) {
