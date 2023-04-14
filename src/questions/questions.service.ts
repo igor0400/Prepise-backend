@@ -101,9 +101,9 @@ export class QuestionsService {
       return questions;
    }
 
-   async getQuestionById(id: number) {
+   async getQuestionById(id: number, type: 'default' | 'test') {
       const question = this.questionRepository.findOne({
-         where: { id },
+         where: { id, type },
          include: this.questionsInclude,
       });
       return question;

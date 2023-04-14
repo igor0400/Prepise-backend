@@ -104,9 +104,9 @@ export class BlocksService {
       return blocks;
    }
 
-   async getBlockById(id: number) {
+   async getBlockById(id: number, type: 'default' | 'test') {
       const block = this.blockRepository.findOne({
-         where: { id },
+         where: { id, type },
          include: this.blocksInclude,
       });
       return block;

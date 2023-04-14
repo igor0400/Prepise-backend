@@ -46,9 +46,20 @@ export class BlocksController {
       return this.blocksService.getAllBlocks('test', +limit, +offset, search);
    }
 
-   @Get(':id')
-   async getBlockById(@Param('id', ParseIntPipe) blockId: number) {
-      const block = await this.blocksService.getBlockById(blockId);
+   @Get('default/:id')
+   async getDefaultBlockById(@Param('id', ParseIntPipe) blockId: number) {
+      const block = await this.blocksService.getBlockById(blockId, 'default');
+
+      if (block) {
+         return block;
+      } else {
+         return `Блок с id: ${blockId} не найден`;
+      }
+   }
+
+   @Get('test/:id')
+   async getTestBlockById(@Param('id', ParseIntPipe) blockId: number) {
+      const block = await this.blocksService.getBlockById(blockId, 'test');
 
       if (block) {
          return block;

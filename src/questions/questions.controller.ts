@@ -63,14 +63,31 @@ export class QuestionsController {
       );
    }
 
-   @Get(':id')
-   async getQuestionById(@Param('id', ParseIntPipe) questionId: number) {
-      const question = await this.questionsService.getQuestionById(questionId);
+   @Get('default/:id')
+   async getDefaultQuestionById(@Param('id', ParseIntPipe) questionId: number) {
+      const question = await this.questionsService.getQuestionById(
+         questionId,
+         'default',
+      );
 
       if (question) {
          return question;
       } else {
          return `Вопрос с id: ${questionId} не найден`;
+      }
+   }
+
+   @Get('test/:id')
+   async getTestQuestionById(@Param('id', ParseIntPipe) questionId: number) {
+      const question = await this.questionsService.getQuestionById(
+         questionId,
+         'test',
+      );
+
+      if (question) {
+         return question;
+      } else {
+         return `Тест с id: ${questionId} не найден`;
       }
    }
 
