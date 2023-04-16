@@ -138,8 +138,8 @@ export class QuestionsController {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Patch(':id')
-   changeQuestionInfo(
+   @Patch('default/:id')
+   changeDefaultQuestionInfo(
       @Param('id', ParseIntPipe) questionId: number,
       @Body() dto: ChangeQuestionDto,
       @Req() req: CustomReq,
@@ -147,7 +147,21 @@ export class QuestionsController {
       return this.questionsService.changeQuestionInfo(
          questionId,
          +req.user.sub,
-         dto,
+         { ...dto, type: 'default' },
+      );
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Patch('test/:id')
+   changeTestQuestionInfo(
+      @Param('id', ParseIntPipe) questionId: number,
+      @Body() dto: ChangeQuestionDto,
+      @Req() req: CustomReq,
+   ) {
+      return this.questionsService.changeQuestionInfo(
+         questionId,
+         +req.user.sub,
+         { ...dto, type: 'test' },
       );
    }
 

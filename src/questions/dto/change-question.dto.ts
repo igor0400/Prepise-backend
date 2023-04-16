@@ -1,8 +1,6 @@
 import {
    IsArray,
-   IsBoolean,
    IsEnum,
-   IsNotEmpty,
    IsObject,
    IsOptional,
    IsString,
@@ -10,8 +8,6 @@ import {
 } from 'class-validator';
 
 export class ChangeQuestionDto {
-   @IsNotEmpty()
-   @IsString()
    readonly type: 'default' | 'test';
 
    @IsOptional()
