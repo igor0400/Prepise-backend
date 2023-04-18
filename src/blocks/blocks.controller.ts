@@ -89,7 +89,7 @@ export class BlocksController {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Patch(':id')
+   @Patch(['default/:id', 'test/:id'])
    changeBlockInfo(
       @Param('id', ParseIntPipe) blockId: number,
       @Body() dto: ChangeBlockDto,
