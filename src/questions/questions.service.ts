@@ -488,7 +488,7 @@ export class QuestionsService {
       }
 
       await this.doneQuestion({
-         userId: question.authorId,
+         userId: dto.authorId,
          questionId: question.id,
       });
 
