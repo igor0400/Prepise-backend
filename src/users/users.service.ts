@@ -39,8 +39,8 @@ export const reducedUsersInclude = [
    { model: Tag, as: 'followingTags' },
    { model: Tag, as: 'ignoringTags' },
    { model: User, as: 'followingUsers' },
-   { model: Question, as: 'questions' },
-   { model: Block, as: 'blocks' },
+   { model: Question, as: 'questions', include: [Tag] },
+   { model: Block, as: 'blocks', include: [Tag] },
    { model: UserPost, include: [UserPostImage] },
    { model: Achievement },
    { model: UserOnline },
@@ -316,6 +316,15 @@ export class UsersService {
                .map((item) => item.followedUserId)
                .includes(+followedUserId)
          ) {
+            const followedUser = await this.userRepository.findByPk(
+               followedUserId,
+            );
+
+            if (followedUser) {
+               followedUser.followers += 1;
+               followedUser.save();
+            }
+
             createdUsers.push(
                await this.userFollowingUserRepository.create({
                   userId,
@@ -333,6 +342,15 @@ export class UsersService {
       const { followedUsers, userId } = dto;
 
       for (let followedUserId of followedUsers) {
+         const followedUser = await this.userRepository.findByPk(
+            followedUserId,
+         );
+
+         if (followedUser) {
+            followedUser.followers -= 1;
+            followedUser.save();
+         }
+
          deletedUsers.push({
             [followedUserId]: await this.userFollowingUserRepository.destroy({
                where: {
