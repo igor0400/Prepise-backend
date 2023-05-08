@@ -1,6 +1,5 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { UnauthorizedException } from '@nestjs/common';
 import { TokensService } from 'src/auth/tokens.service';
 import { UsersService } from './users.service';
 import { Server } from 'socket.io';
@@ -40,11 +39,7 @@ export class UsersGateway {
       const bearer = authHeader?.split(' ')[0];
       const token = authHeader?.split(' ')[1];
 
-      if (bearer !== 'Bearer' || !token) {
-         throw new UnauthorizedException({
-            message: 'Пользователь не авторизован',
-         });
-      }
+      if (bearer !== 'Bearer' || !token) return false;
 
       const data = await this.tokensService.resolveUserFromAccessToken(token);
       return data;

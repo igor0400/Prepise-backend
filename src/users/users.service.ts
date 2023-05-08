@@ -31,6 +31,8 @@ import { EmailService } from 'src/email/email.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserOnline } from './models/user-online.model';
 
+// сделать отдельное получение частей с большим кол-вом данных (почти всё)
+
 export const reducedUsersInclude = [
    { model: Role },
    { model: BanUser },
