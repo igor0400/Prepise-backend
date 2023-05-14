@@ -71,7 +71,7 @@ export class FavouritesService {
 
       const items = await repository.findAll({
          offset: offset || 0,
-         limit: limit || 20,
+         limit: limit || 100000000000000,
          where,
          order: ['id'],
       });
@@ -80,101 +80,111 @@ export class FavouritesService {
    }
 
    async createFavouriteQuestion(dto: CreateFavouriteQuestion) {
-      await this.verifyType(this.questionRepository, dto.questionId, 'default');
+      await this.verifyType(this.questionRepository, dto.itemId, 'default');
 
-      const question = await this.favouriteQuestionRepository.create(dto);
+      const question = await this.favouriteQuestionRepository.findOrCreate({
+         where: { ...dto },
+      });
       return question;
    }
 
-   async deleteFavouriteQuestion(questionId: number, userId: number) {
+   async deleteFavouriteQuestion(itemId: number, userId: number) {
       const question = await this.favouriteQuestionRepository.destroy({
-         where: { questionId, userId },
+         where: { itemId, userId },
       });
       return question;
    }
 
    async createFavouriteTestQuestion(dto: CreateFavouriteTestQuestion) {
-      await this.verifyType(
-         this.questionRepository,
-         dto.testQuestionId,
-         'test',
-      );
+      await this.verifyType(this.questionRepository, dto.itemId, 'test');
 
-      const question = await this.favouriteTestQuestionRepository.create(dto);
+      const question = await this.favouriteTestQuestionRepository.findOrCreate({
+         where: { ...dto },
+      });
       return question;
    }
 
-   async deleteFavouriteTestQuestion(testQuestionId: number, userId: number) {
+   async deleteFavouriteTestQuestion(itemId: number, userId: number) {
       const question = await this.favouriteTestQuestionRepository.destroy({
-         where: { testQuestionId, userId },
+         where: { itemId, userId },
       });
       return question;
    }
 
    async createFavouriteBlock(dto: CreateFavouriteBlock) {
-      await this.verifyType(this.blockRepository, dto.blockId, 'default');
+      await this.verifyType(this.blockRepository, dto.itemId, 'default');
 
-      const block = await this.favouriteBlockRepository.create(dto);
+      const block = await this.favouriteBlockRepository.findOrCreate({
+         where: { ...dto },
+      });
       return block;
    }
 
-   async deleteFavouriteBlock(blockId: number, userId: number) {
+   async deleteFavouriteBlock(itemId: number, userId: number) {
       const block = await this.favouriteBlockRepository.destroy({
-         where: { blockId, userId },
+         where: { itemId, userId },
       });
       return block;
    }
 
    async createFavouriteTestBlock(dto: CreateFavouriteTestBlock) {
-      await this.verifyType(this.blockRepository, dto.testBlockId, 'test');
+      await this.verifyType(this.blockRepository, dto.itemId, 'test');
 
-      const block = await this.favouriteTestBlockRepository.create(dto);
+      const block = await this.favouriteTestBlockRepository.findOrCreate({
+         where: { ...dto },
+      });
       return block;
    }
 
-   async deleteFavouriteTestBlock(testBlockId: number, userId: number) {
+   async deleteFavouriteTestBlock(itemId: number, userId: number) {
       const block = await this.favouriteTestBlockRepository.destroy({
-         where: { testBlockId, userId },
+         where: { itemId, userId },
       });
       return block;
    }
 
    async createFavouriteUser(dto: CreateFavouriteUser) {
-      await this.verifyUserType(dto.favouriteUserId, 'user');
+      await this.verifyUserType(dto.itemId, 'user');
 
-      const user = await this.favouriteUserRepository.create(dto);
+      const user = await this.favouriteUserRepository.findOrCreate({
+         where: { ...dto },
+      });
       return user;
    }
 
-   async deleteFavouriteUser(favouriteUserId: number, userId: number) {
+   async deleteFavouriteUser(itemId: number, userId: number) {
       const user = await this.favouriteUserRepository.destroy({
-         where: { favouriteUserId, userId },
+         where: { itemId, userId },
       });
       return user;
    }
 
    async createFavouriteCompany(dto: CreateFavouriteCompany) {
-      await this.verifyUserType(dto.companyId, 'company');
+      await this.verifyUserType(dto.itemId, 'company');
 
-      const company = await this.favouriteCompanyRepository.create(dto);
+      const company = await this.favouriteCompanyRepository.findOrCreate({
+         where: { ...dto },
+      });
       return company;
    }
 
-   async deleteFavouriteCompany(companyId: number, userId: number) {
+   async deleteFavouriteCompany(itemId: number, userId: number) {
       const company = await this.favouriteCompanyRepository.destroy({
-         where: { companyId, userId },
+         where: { itemId, userId },
       });
       return company;
    }
 
    async createFavouriteTag(dto: CreateFavouriteTag) {
-      const tag = await this.favouriteTagRepository.create(dto);
+      const tag = await this.favouriteTagRepository.findOrCreate({
+         where: { ...dto },
+      });
       return tag;
    }
 
-   async deleteFavouriteTag(tagId: number, userId: number) {
+   async deleteFavouriteTag(itemId: number, userId: number) {
       const tag = await this.favouriteTagRepository.destroy({
-         where: { tagId, userId },
+         where: { itemId, userId },
       });
       return tag;
    }

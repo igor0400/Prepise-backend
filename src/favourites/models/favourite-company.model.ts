@@ -8,37 +8,37 @@ import {
 import { User } from 'src/users/models/user.model';
 
 interface FavouriteCompanyCreationArgs {
-  userId: number;
-  companyId: number;
+   userId: number;
+   itemId: number;
 }
 
 @Table({
-  tableName: 'FAVOURITE_COMPANIES',
-  timestamps: false,
+   tableName: 'FAVOURITE_COMPANIES',
+   timestamps: false,
 })
 export class FavouriteCompany extends Model<
-  FavouriteCompany,
-  FavouriteCompanyCreationArgs
+   FavouriteCompany,
+   FavouriteCompanyCreationArgs
 > {
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    primaryKey: true,
-    autoIncrement: true,
-  })
-  id: number;
+   @Column({
+      type: DataType.INTEGER,
+      unique: true,
+      primaryKey: true,
+      autoIncrement: true,
+   })
+   id: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  userId: number;
+   @ForeignKey(() => User)
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   userId: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  companyId: number;
+   @ForeignKey(() => User)
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   itemId: number;
 }

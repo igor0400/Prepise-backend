@@ -28,7 +28,7 @@ export class PostsController {
    getAllUserPosts(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
-      @Query('userId') userId: string,
+      @Query('authorId') userId: string,
    ) {
       return this.postsService.getAllUserPosts(+limit, +offset, +userId);
    }

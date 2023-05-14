@@ -12,8 +12,8 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomReq } from 'src/types/request-type';
 import { FavouritesService } from './favourites.service';
-import { Request } from 'express';
 
+@UseGuards(JwtAuthGuard)
 @Controller('favourites')
 export class FavouritesController {
    constructor(private favouritesService: FavouritesService) {}
@@ -30,8 +30,7 @@ export class FavouritesController {
    getFavouriteItems(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
-      @Query('userId') userId: string,
-      @Req() req: Request,
+      @Req() req: CustomReq,
    ) {
       const url: any = req.originalUrl.split('/')[2].split('?')[0];
 
@@ -39,23 +38,21 @@ export class FavouritesController {
          url,
          +limit,
          +offset,
-         +userId,
+         +req.user.sub,
       );
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('questions/:id')
    createFavouriteQuestion(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteQuestion({
-         questionId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('questions/:id')
    deleteFavouriteQuestion(
       @Param('id', ParseIntPipe) id: number,
@@ -64,19 +61,17 @@ export class FavouritesController {
       return this.favouritesService.deleteFavouriteQuestion(id, +req.user.sub);
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('test-questions/:id')
    createFavouriteTestQuestion(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteTestQuestion({
-         testQuestionId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('test-questions/:id')
    deleteFavouriteTestQuestion(
       @Param('id', ParseIntPipe) id: number,
@@ -88,19 +83,17 @@ export class FavouritesController {
       );
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('blocks/:id')
    createFavouriteBlock(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteBlock({
-         blockId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('blocks/:id')
    deleteFavouriteBlock(
       @Param('id', ParseIntPipe) id: number,
@@ -109,19 +102,17 @@ export class FavouritesController {
       return this.favouritesService.deleteFavouriteBlock(id, +req.user.sub);
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('test-blocks/:id')
    createFavouriteTestBlock(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteTestBlock({
-         testBlockId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('test-blocks/:id')
    deleteFavouriteTestBlock(
       @Param('id', ParseIntPipe) id: number,
@@ -130,19 +121,17 @@ export class FavouritesController {
       return this.favouritesService.deleteFavouriteTestBlock(id, +req.user.sub);
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('users/:id')
    createFavouriteUser(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteUser({
-         favouriteUserId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('users/:id')
    deleteFavouriteUser(
       @Param('id', ParseIntPipe) id: number,
@@ -151,19 +140,17 @@ export class FavouritesController {
       return this.favouritesService.deleteFavouriteUser(id, +req.user.sub);
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('companies/:id')
    createFavouriteCompany(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteCompany({
-         companyId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('companies/:id')
    deleteFavouriteCompany(
       @Param('id', ParseIntPipe) id: number,
@@ -172,19 +159,17 @@ export class FavouritesController {
       return this.favouritesService.deleteFavouriteCompany(id, +req.user.sub);
    }
 
-   @UseGuards(JwtAuthGuard)
    @Post('tags/:id')
    createFavouriteTag(
       @Param('id', ParseIntPipe) id: number,
       @Req() req: CustomReq,
    ) {
       return this.favouritesService.createFavouriteTag({
-         tagId: id,
+         itemId: id,
          userId: +req.user.sub,
       });
    }
 
-   @UseGuards(JwtAuthGuard)
    @Delete('tags/:id')
    deleteFavouriteTag(
       @Param('id', ParseIntPipe) id: number,

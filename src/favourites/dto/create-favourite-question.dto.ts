@@ -1,4 +1,4 @@
 export class CreateFavouriteQuestion {
-  readonly userId: number;
-  readonly questionId: number;
+   readonly userId: number;
+   readonly itemId: number;
 }

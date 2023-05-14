@@ -1,4 +1,4 @@
 export class CreateFavouriteTestBlock {
-  readonly userId: number;
-  readonly testBlockId: number;
+   readonly userId: number;
+   readonly itemId: number;
 }

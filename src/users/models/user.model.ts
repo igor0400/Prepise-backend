@@ -175,10 +175,10 @@ export class User extends Model<User, UserCreationArgs> {
    @BelongsToMany(() => Block, () => FavouriteTestBlock)
    favouriteTestBlocks: Block[];
 
-   @BelongsToMany(() => User, () => FavouriteUser, 'userId', 'favouriteUserId')
+   @BelongsToMany(() => User, () => FavouriteUser, 'userId', 'itemId')
    favouriteUsers: User[];
 
-   @BelongsToMany(() => User, () => FavouriteCompany, 'userId', 'companyId')
+   @BelongsToMany(() => User, () => FavouriteCompany, 'userId', 'itemId')
    favouriteCompanies: User[];
 
    @BelongsToMany(() => Tag, () => FavouriteTag)

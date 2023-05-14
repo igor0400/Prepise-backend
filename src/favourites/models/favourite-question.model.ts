@@ -9,37 +9,37 @@ import { Question } from 'src/questions/models/question.model';
 import { User } from 'src/users/models/user.model';
 
 interface FavouriteQuestionCreationArgs {
-  userId: number;
-  questionId: number;
+   userId: number;
+   itemId: number;
 }
 
 @Table({
-  tableName: 'FAVOURITE_QUESTIONS',
-  timestamps: false,
+   tableName: 'FAVOURITE_QUESTIONS',
+   timestamps: false,
 })
 export class FavouriteQuestion extends Model<
-  FavouriteQuestion,
-  FavouriteQuestionCreationArgs
+   FavouriteQuestion,
+   FavouriteQuestionCreationArgs
 > {
-  @Column({
-    type: DataType.INTEGER,
-    unique: true,
-    primaryKey: true,
-    autoIncrement: true,
-  })
-  id: number;
+   @Column({
+      type: DataType.INTEGER,
+      unique: true,
+      primaryKey: true,
+      autoIncrement: true,
+   })
+   id: number;
 
-  @ForeignKey(() => User)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  userId: number;
+   @ForeignKey(() => User)
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   userId: number;
 
-  @ForeignKey(() => Question)
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-  })
-  questionId: number;
+   @ForeignKey(() => Question)
+   @Column({
+      type: DataType.INTEGER,
+      allowNull: false,
+   })
+   itemId: number;
 }

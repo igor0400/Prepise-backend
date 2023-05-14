@@ -4,21 +4,21 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.createTable('FAVOURITE_TEST_BLOCKS', {
-      id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        unique: true,
-        primaryKey: true,
-      },
-      userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      testBlockId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
+       id: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          unique: true,
+          primaryKey: true,
+       },
+       userId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+       },
+       itemId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+       },
     });
   },
 

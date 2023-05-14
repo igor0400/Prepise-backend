@@ -1,4 +1,4 @@
 export class CreateFavouriteUser {
-  readonly userId: number;
-  readonly favouriteUserId: number;
+   readonly userId: number;
+   readonly itemId: number;
 }

@@ -41,7 +41,13 @@ export class UsersGateway {
 
       if (bearer !== 'Bearer' || !token) return false;
 
-      const data = await this.tokensService.resolveUserFromAccessToken(token);
-      return data;
+      try {
+         const data = await this.tokensService.resolveUserFromAccessToken(
+            token,
+         );
+         return data;
+      } catch (e) {
+         return false;
+      }
    }
 }

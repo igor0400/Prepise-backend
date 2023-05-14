@@ -1,4 +1,4 @@
 export class CreateFavouriteTag {
-  readonly userId: number;
-  readonly tagId: number;
+   readonly userId: number;
+   readonly itemId: number;
 }
