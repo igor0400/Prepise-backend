@@ -57,7 +57,7 @@ export class UsersController {
          summary,
       );
    }
-   
+
    @UseGuards(JwtAuthGuard)
    @Get('personal')
    async getUserPersonal(@Req() req: CustomReq) {
@@ -134,6 +134,15 @@ export class UsersController {
          ...dto,
          userId: +req.user.sub,
       });
+   }
+
+   @Get('following-users')
+   getAllFollowingUsers(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('userId') userId: string,
+   ) {
+      return this.usersService.getAllFollowingUsers(+limit, +offset, +userId);
    }
 
    @UseGuards(JwtAuthGuard)

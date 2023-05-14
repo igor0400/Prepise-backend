@@ -40,12 +40,14 @@ export class QuestionsController {
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
+      @Query('authorId') authorId: string,
    ) {
       return this.questionsService.getAllQuestions(
          'default',
          +limit,
          +offset,
          search,
+         +authorId,
       );
    }
 
@@ -54,12 +56,14 @@ export class QuestionsController {
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
+      @Query('authorId') authorId: string,
    ) {
       return this.questionsService.getAllQuestions(
          'test',
          +limit,
          +offset,
          search,
+         +authorId,
       );
    }
 

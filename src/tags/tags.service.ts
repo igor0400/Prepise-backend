@@ -269,6 +269,19 @@ export class TagsService {
       return this.createUserTags(dto);
    }
 
+   async getUserFollowingTags(limit: number, offset: number, userId?: number) {
+      const where = userId ? { userId } : undefined;
+
+      const tags = await this.userFollowingTagRepository.findAll({
+         offset: offset || 0,
+         limit: limit || 20,
+         where,
+         order: ['id'],
+      });
+
+      return tags;
+   }
+
    async createUserFollowingTags(dto: CreateUserTagsDto) {
       await this.changeTagFields('inc', dto.tags, 'followers');
 
@@ -285,6 +298,19 @@ export class TagsService {
          repository: this.userFollowingTagRepository,
          dto,
       });
+   }
+
+   async getUserIgnoredTags(limit: number, offset: number, userId?: number) {
+      const where = userId ? { userId } : undefined;
+
+      const tags = await this.userIgnoredTagRepository.findAll({
+         offset: offset || 0,
+         limit: limit || 20,
+         where,
+         order: ['id'],
+      });
+
+      return tags;
    }
 
    async createUserIgnoredTags(dto: CreateUserTagsDto) {

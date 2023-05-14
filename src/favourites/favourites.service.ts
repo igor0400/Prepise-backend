@@ -43,6 +43,42 @@ export class FavouritesService {
       private userRepository: typeof User,
    ) {}
 
+   itemsRepositories = {
+      questions: this.favouriteQuestionRepository,
+      tests: this.favouriteTestQuestionRepository,
+      blocks: this.favouriteBlockRepository,
+      testBlocks: this.favouriteTestBlockRepository,
+      users: this.favouriteUserRepository,
+      companies: this.favouriteCompanyRepository,
+      tags: this.favouriteTagRepository,
+   };
+
+   async getAllFavouriteItems(
+      type:
+         | 'questions'
+         | 'tests'
+         | 'blocks'
+         | 'testBlocks'
+         | 'users'
+         | 'companies'
+         | 'tags',
+      limit: number,
+      offset: number,
+      userId: number,
+   ) {
+      const repository: any = this.itemsRepositories[type];
+      const where = userId ? { userId } : undefined;
+
+      const items = await repository.findAll({
+         offset: offset || 0,
+         limit: limit || 20,
+         where,
+         order: ['id'],
+      });
+
+      return items;
+   }
+
    async createFavouriteQuestion(dto: CreateFavouriteQuestion) {
       await this.verifyType(this.questionRepository, dto.questionId, 'default');
 

@@ -1,19 +1,47 @@
 import {
    Controller,
    Delete,
+   Get,
    Param,
    ParseIntPipe,
    Post,
+   Query,
    Req,
    UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomReq } from 'src/types/request-type';
 import { FavouritesService } from './favourites.service';
+import { Request } from 'express';
 
 @Controller('favourites')
 export class FavouritesController {
    constructor(private favouritesService: FavouritesService) {}
+
+   @Get([
+      'questions',
+      'tests',
+      'blocks',
+      'testBlocks',
+      'users',
+      'companies',
+      'tags',
+   ])
+   getFavouriteItems(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('userId') userId: string,
+      @Req() req: Request,
+   ) {
+      const url: any = req.originalUrl.split('/')[2].split('?')[0];
+
+      return this.favouritesService.getAllFavouriteItems(
+         url,
+         +limit,
+         +offset,
+         +userId,
+      );
+   }
 
    @UseGuards(JwtAuthGuard)
    @Post('questions/:id')

@@ -18,10 +18,20 @@ import { ChangeUserPostDto } from './dto/change-user-post.dto';
 import { CreateUserPostDto } from './dto/create-user-post.dto';
 import { PostsService } from './posts.service';
 import { Multer } from 'multer';
+import { Get, Query } from '@nestjs/common';
 
 @Controller('posts')
 export class PostsController {
    constructor(private postsService: PostsService) {}
+
+   @Get('users')
+   getAllUserPosts(
+      @Query('limit') limit: string,
+      @Query('offset') offset: string,
+      @Query('userId') userId: string,
+   ) {
+      return this.postsService.getAllUserPosts(+limit, +offset, +userId);
+   }
 
    @UseGuards(JwtAuthGuard)
    @Post('users')

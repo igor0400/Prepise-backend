@@ -28,12 +28,14 @@ export class BlocksController {
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
+      @Query('authorId') authorId: string,
    ) {
       return this.blocksService.getAllBlocks(
          'default',
          +limit,
          +offset,
          search,
+         +authorId,
       );
    }
 
@@ -42,8 +44,15 @@ export class BlocksController {
       @Query('limit') limit: string,
       @Query('offset') offset: string,
       @Query('search') search: string,
+      @Query('authorId') authorId: string,
    ) {
-      return this.blocksService.getAllBlocks('test', +limit, +offset, search);
+      return this.blocksService.getAllBlocks(
+         'test',
+         +limit,
+         +offset,
+         search,
+         +authorId,
+      );
    }
 
    @Get('default/:id')

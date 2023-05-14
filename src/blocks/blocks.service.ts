@@ -88,19 +88,29 @@ export class BlocksService {
       limit: number,
       offset: number,
       search: string = '',
+      authorId?: number,
    ) {
+      const defaultWhere = {
+         title: {
+            [Op.like]: `%${search}%`,
+         },
+         type,
+      };
+      const where = authorId
+         ? {
+              ...defaultWhere,
+              authorId,
+           }
+         : defaultWhere;
+
       const blocks = await this.blockRepository.findAll({
          offset: offset || 0,
-         limit: limit || 100,
+         limit: limit || 20,
          include: this.blocksInclude,
-         where: {
-            title: {
-               [Op.like]: `%${search}%`,
-            },
-            type,
-         },
+         where,
          order: ['id'],
       });
+
       return blocks;
    }
 

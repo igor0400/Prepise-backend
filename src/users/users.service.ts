@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus, Session } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './models/user.model';
@@ -14,8 +14,6 @@ import { UserSession } from 'src/sessions/models/user-session.model';
 import { Role } from 'src/roles/models/roles.model';
 import { BanUser } from 'src/banned/models/banned-users.model';
 import { Tag } from 'src/tags/models/tag.model';
-import { Question } from 'src/questions/models/question.model';
-import { Block } from 'src/blocks/models/block.model';
 import { CreateUserFollowingUsersDto } from './dto/create-user-following-user.dto';
 import { UserFollowingUser } from './models/user-following-user.model';
 import { DeleteUserFollowingUsersDto } from './dto/delete-user-following-user.dto';
@@ -24,26 +22,16 @@ import { Interview } from 'src/interviewes/models/interview.model';
 import { Notification } from 'src/notifications/model/notification.model';
 import { Settings } from 'src/settings/models/settings.model';
 import { NotifiSettings } from 'src/settings/models/notifi-settings.model';
-import { UserPost } from 'src/posts/models/user-post.model';
-import { UserPostImage } from 'src/posts/models/user-post-images.model';
 import { Achievement } from 'src/achievements/models/achievement.model';
 import { EmailService } from 'src/email/email.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserOnline } from './models/user-online.model';
-
-// сделать отдельное получение частей с большим кол-вом данных (почти всё)
 
 export const reducedUsersInclude = [
    { model: Role },
    { model: BanUser },
    { model: UserInfo },
    { model: Tag, as: 'tags' },
-   { model: Tag, as: 'followingTags' },
-   { model: Tag, as: 'ignoringTags' },
-   { model: User, as: 'followingUsers' },
-   { model: Question, as: 'questions', include: [Tag] },
-   { model: Block, as: 'blocks', include: [Tag] },
-   { model: UserPost, include: [UserPostImage] },
    { model: Achievement },
    { model: UserOnline },
 ];
@@ -51,13 +39,6 @@ export const reducedUsersInclude = [
 export const usersInclude = [
    ...reducedUsersInclude,
    { model: UserSession },
-   { model: Question, as: 'favouriteQuestions' },
-   { model: Question, as: 'favouriteTestQuestions' },
-   { model: Block, as: 'favouriteBlocks' },
-   { model: Block, as: 'favouriteTestBlocks' },
-   { model: User, as: 'favouriteUsers' },
-   { model: User, as: 'favouriteCompanies' },
-   { model: Tag, as: 'favouriteTags' },
    { model: Interview },
    { model: Notification },
    { model: Settings, include: [NotifiSettings] },
@@ -133,7 +114,7 @@ export class UsersService {
    async getAllUsers(limit: number, offset: number, search: string = '') {
       const users = await this.userRepository.findAll({
          offset: offset || 0,
-         limit: limit || 100,
+         limit: limit || 20,
          include: reducedUsersInclude,
          where: {
             type: 'user',
@@ -303,6 +284,19 @@ export class UsersService {
 
       user.avatar = avatarPath;
       return user.save();
+   }
+
+   async getAllFollowingUsers(limit: number, offset: number, userId?: number) {
+      const where = userId ? { userId } : undefined;
+
+      const users = await this.userFollowingUserRepository.findAll({
+         offset: offset || 0,
+         limit: limit || 20,
+         where,
+         order: ['id'],
+      });
+
+      return users;
    }
 
    async createUserFollowingUsers(dto: CreateUserFollowingUsersDto) {
