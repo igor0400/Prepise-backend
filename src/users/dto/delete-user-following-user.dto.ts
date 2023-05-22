@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsArray } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class DeleteUserFollowingUsersDto {
-  readonly userId: number;
+   readonly followedUserId: number;
 
-  @IsNotEmpty()
-  @IsArray()
-  readonly followedUsers: string[];
+   @IsNotEmpty()
+   @IsNumber()
+   readonly userId: number;
 }

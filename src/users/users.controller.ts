@@ -140,7 +140,7 @@ export class UsersController {
    getAllFollowingUsers(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
-      @Query('userId') userId: string,
+      @Query('authorId') userId: string,
    ) {
       return this.usersService.getAllFollowingUsers(+limit, +offset, +userId);
    }
@@ -153,7 +153,7 @@ export class UsersController {
    ) {
       return this.usersService.createUserFollowingUsers({
          ...dto,
-         userId: +req.user.sub,
+         followedUserId: +req.user.sub,
       });
    }
 
@@ -165,7 +165,7 @@ export class UsersController {
    ) {
       return this.usersService.deleteUserFollowingUsers({
          ...dto,
-         userId: +req.user.sub,
+         followedUserId: +req.user.sub,
       });
    }
 

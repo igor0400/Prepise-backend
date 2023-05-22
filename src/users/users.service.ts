@@ -287,7 +287,7 @@ export class UsersService {
    }
 
    async getAllFollowingUsers(limit: number, offset: number, userId?: number) {
-      const where = userId ? { userId } : undefined;
+      const where = userId ? { followedUserId: userId } : undefined;
 
       const users = await this.userFollowingUserRepository.findAll({
          offset: offset || 0,
@@ -300,64 +300,48 @@ export class UsersService {
    }
 
    async createUserFollowingUsers(dto: CreateUserFollowingUsersDto) {
-      const { userId, followedUsers } = dto;
-      const createdUsers = [];
+      const { userId, followedUserId } = dto;
       const userFollows = await this.userFollowingUserRepository.findAll({
          where: { userId },
       });
 
-      for (let followedUserId of followedUsers) {
-         if (
-            !userFollows
-               .map((item) => item.followedUserId)
-               .includes(+followedUserId)
-         ) {
-            const followedUser = await this.userRepository.findByPk(
-               followedUserId,
-            );
-
-            if (followedUser) {
-               followedUser.followers += 1;
-               followedUser.save();
-            }
-
-            createdUsers.push(
-               await this.userFollowingUserRepository.create({
-                  userId,
-                  followedUserId: +followedUserId,
-               }),
-            );
-         }
-      }
-
-      return createdUsers;
-   }
-
-   async deleteUserFollowingUsers(dto: DeleteUserFollowingUsersDto) {
-      const deletedUsers = [];
-      const { followedUsers, userId } = dto;
-
-      for (let followedUserId of followedUsers) {
-         const followedUser = await this.userRepository.findByPk(
-            followedUserId,
-         );
+      if (
+         !userFollows
+            .map((item) => item.followedUserId)
+            .includes(followedUserId)
+      ) {
+         const followedUser = await this.userRepository.findByPk(userId);
 
          if (followedUser) {
-            followedUser.followers -= 1;
+            followedUser.followers += 1;
             followedUser.save();
          }
 
-         deletedUsers.push({
-            [followedUserId]: await this.userFollowingUserRepository.destroy({
-               where: {
-                  userId,
-                  followedUserId: +followedUserId,
-               },
-            }),
+         return await this.userFollowingUserRepository.create({
+            userId,
+            followedUserId,
          });
       }
 
-      return deletedUsers;
+      return false;
+   }
+
+   async deleteUserFollowingUsers(dto: DeleteUserFollowingUsersDto) {
+      const { followedUserId, userId } = dto;
+
+      const followedUser = await this.userRepository.findByPk(userId);
+
+      if (followedUser) {
+         followedUser.followers -= 1;
+         followedUser.save();
+      }
+
+      return await this.userFollowingUserRepository.destroy({
+         where: {
+            userId,
+            followedUserId,
+         },
+      });
    }
 
    async changePassword(dto: ChangePasswordDto) {
