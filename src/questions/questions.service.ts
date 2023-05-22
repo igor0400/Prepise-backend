@@ -525,6 +525,38 @@ export class QuestionsService {
       return testQuestionReply.save();
    }
 
+   async acceptReplyTestQuestion(replyId: number) {
+      const testQuestionReply = await this.testQuestionReplyRepository.findOne({
+         where: { id: replyId },
+      });
+
+      if (!testQuestionReply) {
+         throw new HttpException(
+            'Не найден ответ на вопрос',
+            HttpStatus.NOT_FOUND,
+         );
+      }
+
+      testQuestionReply.accepted = true;
+
+      return testQuestionReply.save();
+   }
+
+   async deleteReplyTestQuestion(replyId: number, authorId: number) {
+      const testQuestionReply = await this.testQuestionReplyRepository.destroy({
+         where: { id: replyId, authorId },
+      });
+
+      if (!testQuestionReply) {
+         throw new HttpException(
+            `Не найден ответ на вопрос c id: ${replyId}`,
+            HttpStatus.NOT_FOUND,
+         );
+      }
+
+      return testQuestionReply;
+   }
+
    async viewQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },

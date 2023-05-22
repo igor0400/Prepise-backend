@@ -236,6 +236,15 @@ export class QuestionsController {
    }
 
    @UseGuards(JwtAuthGuard)
+   @Delete('/reply/test-question/:id')
+   deleteReplyTestQuestion(
+      @Param('id', ParseIntPipe) replyId: string,
+      @Query('authorId', ParseIntPipe) authorId: string,
+   ) {
+      return this.questionsService.deleteReplyTestQuestion(+replyId, +authorId);
+   }
+
+   @UseGuards(JwtAuthGuard)
    @Patch('test-question-reply/:id')
    changeReplyTestQuestion(
       @Param('id', ParseIntPipe) replyId: number,
@@ -247,6 +256,12 @@ export class QuestionsController {
          +req.user.sub,
          text,
       );
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Post('test-question-reply/:id/assept')
+   acceptReplyTestQuestion(@Param('id', ParseIntPipe) replyId: number) {
+      return this.questionsService.acceptReplyTestQuestion(replyId);
    }
 
    @UseGuards(JwtAuthGuard)

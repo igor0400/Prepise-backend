@@ -189,6 +189,17 @@ export class UsersController {
       }
    }
 
+   @Get('full/:id')
+   async getReducedAllItemsById(@Param('id', ParseIntPipe) id: number) {
+      const user = await this.usersService.getReducedUserById(id);
+
+      if (user) {
+         return user;
+      } else {
+         return `Пользователь с id: ${id} не найден`;
+      }
+   }
+
    @Roles('ADMIN')
    @UseGuards(RolesGuard)
    @Delete(':id')
