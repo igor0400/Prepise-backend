@@ -14,7 +14,7 @@ export class EmailController {
    }
 
    @UseGuards(JwtAuthGuard)
-   @Get('change-pass')
+   @Post('change-pass')
    changePass(@Req() req: CustomReq) {
       return this.emailService.sendChangePassCode(+req.user.sub);
    }

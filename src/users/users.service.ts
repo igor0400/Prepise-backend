@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './models/user.model';
-import { hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 import { AddRoleDto } from './dto/add-role.dto';
 import { RolesService } from 'src/roles/roles.service';
 import { UserRoles } from 'src/roles/models/user-roles.model';
@@ -354,7 +354,7 @@ export class UsersService {
    }
 
    async changePassword(dto: ChangePasswordDto) {
-      const { userId, verifyCode, newPassword } = dto;
+      const { userId, verifyCode, newPassword, oldPassword } = dto;
       const verify = await this.emailService.checkVerifyCode(
          userId.toString(),
          verifyCode,
@@ -371,6 +371,16 @@ export class UsersService {
          where: { id: userId },
          include: usersInclude,
       });
+
+      const valid = await compare(oldPassword, user.password);
+
+      if (!valid) {
+         throw new HttpException(
+            'Неверно введен текущий пароль',
+            HttpStatus.BAD_REQUEST,
+         );
+      }
+
       const password = await hash(newPassword, 10);
 
       user.password = password;
