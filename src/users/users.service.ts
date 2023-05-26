@@ -289,12 +289,21 @@ export class UsersService {
    async getAllFollowingUsers(limit: number, offset: number, userId?: number) {
       const where = userId ? { followedUserId: userId } : undefined;
 
-      const users = await this.userFollowingUserRepository.findAll({
+      const followingUsers = await this.userFollowingUserRepository.findAll({
          offset: offset || 0,
          limit: limit || 20,
          where,
          order: ['id'],
       });
+
+      const users = [];
+
+      for (let user of followingUsers) {
+         users.push({
+            ...user.dataValues,
+            user: await this.userRepository.findByPk(user.userId),
+         });
+      }
 
       return users;
    }

@@ -1,9 +1,9 @@
 import {
-  Column,
-  Model,
-  Table,
-  DataType,
-  ForeignKey,
+   Column,
+   Model,
+   Table,
+   DataType,
+   ForeignKey,
 } from 'sequelize-typescript';
 import { Question } from 'src/questions/models/question.model';
 import { User } from 'src/users/models/user.model';

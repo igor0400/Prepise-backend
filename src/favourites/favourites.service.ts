@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Block } from 'src/blocks/models/block.model';
 import { Question } from 'src/questions/models/question.model';
+import { Tag } from 'src/tags/models/tag.model';
 import { User } from 'src/users/models/user.model';
 import { CreateFavouriteBlock } from './dto/create-favourite-block.dto';
 import { CreateFavouriteCompany } from './dto/create-favourite-company.dto';
@@ -41,9 +42,11 @@ export class FavouritesService {
       private blockRepository: typeof Block,
       @InjectModel(User)
       private userRepository: typeof User,
+      @InjectModel(Tag)
+      private tagRepository: typeof Tag,
    ) {}
 
-   itemsRepositories = {
+   favouriteItemsRepositories = {
       questions: this.favouriteQuestionRepository,
       tests: this.favouriteTestQuestionRepository,
       blocks: this.favouriteBlockRepository,
@@ -51,6 +54,16 @@ export class FavouritesService {
       users: this.favouriteUserRepository,
       companies: this.favouriteCompanyRepository,
       tags: this.favouriteTagRepository,
+   };
+
+   itemsRepositories = {
+      questions: this.questionRepository,
+      tests: this.questionRepository,
+      blocks: this.blockRepository,
+      testBlocks: this.blockRepository,
+      users: this.userRepository,
+      companies: this.userRepository,
+      tags: this.tagRepository,
    };
 
    async getAllFavouriteItems(
@@ -66,15 +79,24 @@ export class FavouritesService {
       offset: number,
       userId: number,
    ) {
-      const repository: any = this.itemsRepositories[type];
-      const where = userId ? { userId } : undefined;
+      const repository: any = this.favouriteItemsRepositories[type];
+      const items = [];
 
-      const items = await repository.findAll({
+      const clearItems = await repository.findAll({
          offset: offset || 0,
          limit: limit || 100000000000000,
-         where,
+         where: { userId },
          order: ['id'],
       });
+
+      const itemRepository: any = this.itemsRepositories[type];
+
+      for (let item of clearItems) {
+         items.push({
+            ...item.dataValues,
+            item: await itemRepository.findByPk(item.itemId),
+         });
+      }
 
       return items;
    }

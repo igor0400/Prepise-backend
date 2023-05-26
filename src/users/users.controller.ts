@@ -136,13 +136,18 @@ export class UsersController {
       });
    }
 
+   @UseGuards(JwtAuthGuard)
    @Get('following-users')
    getAllFollowingUsers(
       @Query('limit') limit: string,
       @Query('offset') offset: string,
-      @Query('authorId') userId: string,
+      @Req() req: CustomReq,
    ) {
-      return this.usersService.getAllFollowingUsers(+limit, +offset, +userId);
+      return this.usersService.getAllFollowingUsers(
+         +limit,
+         +offset,
+         +req.user.sub,
+      );
    }
 
    @UseGuards(JwtAuthGuard)
