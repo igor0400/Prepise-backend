@@ -114,6 +114,12 @@ export class User extends Model<User, UserCreationArgs> {
    dislikes: number;
 
    @Column({
+      type: DataType.INTEGER,
+      defaultValue: 0,
+   })
+   viewes: number;
+
+   @Column({
       type: DataType.STRING,
    })
    location: string;

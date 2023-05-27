@@ -49,6 +49,8 @@ export class BlocksService {
       private banBlockRepository: typeof BanBlock,
       @InjectModel(Question)
       private questionRepository: typeof Question,
+      @InjectModel(User)
+      private userRepository: typeof User,
       private tagsService: TagsService,
       private questionsService: QuestionsService,
    ) {}
@@ -327,16 +329,21 @@ export class BlocksService {
    async likeBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
+      const user = await this.userRepository.findByPk(info.block.authorId);
 
       if (!info?.isLike) {
          await this.incBlockParams(dto.blockId, 'likes');
+         user.likes += 1;
       }
 
       if (info?.isDislike) {
          await this.decBlockParams(dto.blockId, 'dislikes');
+         user.dislikes -= 1;
       }
+
+      user.save();
 
       if (!info) {
          await this.blockUUIRepository.create({
@@ -345,6 +352,8 @@ export class BlocksService {
             isLike: true,
          });
          await this.incBlockParams(dto.blockId, 'viewes');
+         user.viewes += 1;
+         user.save();
 
          return true;
       }
@@ -357,12 +366,15 @@ export class BlocksService {
    async deleteLikeBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
+      const user = await this.userRepository.findByPk(info.block.authorId);
 
       if (info?.isLike) {
          info.isLike = false;
          await this.decBlockParams(dto.blockId, 'likes');
+         user.likes -= 1;
+         user.save();
       }
 
       return info?.save();
@@ -371,16 +383,21 @@ export class BlocksService {
    async dislikeBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
+      const user = await this.userRepository.findByPk(info.block.authorId);
 
       if (!info?.isDislike) {
          await this.incBlockParams(dto.blockId, 'dislikes');
+         user.dislikes += 1;
       }
 
       if (info?.isLike) {
          await this.decBlockParams(dto.blockId, 'likes');
+         user.likes -= 1;
       }
+
+      user.save();
 
       if (!info) {
          await this.blockUUIRepository.create({
@@ -389,6 +406,8 @@ export class BlocksService {
             isDislike: true,
          });
          await this.incBlockParams(dto.blockId, 'viewes');
+         user.viewes += 1;
+         user.save();
 
          return true;
       }
@@ -401,12 +420,15 @@ export class BlocksService {
    async deleteDislikeBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
+      const user = await this.userRepository.findByPk(info.block.authorId);
 
       if (info?.isDislike) {
          info.isDislike = false;
          await this.decBlockParams(dto.blockId, 'dislikes');
+         user.dislikes -= 1;
+         user.save();
       }
 
       return info?.save();

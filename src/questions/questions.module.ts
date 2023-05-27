@@ -5,6 +5,7 @@ import { BanQuestion } from 'src/banned/models/banned-questions.model';
 import { DataModule } from 'src/data/data.module';
 import { FilesModule } from 'src/files/files.module';
 import { TagsModule } from 'src/tags/tags.module';
+import { User } from 'src/users/models/user.model';
 import { DefaultQuestionInfo } from './models/default-question-info.model';
 import { QuestionCommentReply } from './models/question-comment-reply.model';
 import { QuestionComment } from './models/question-comment.model';
@@ -34,6 +35,7 @@ import { QuestionsService } from './questions.service';
          QuestionComment,
          QuestionCommentReply,
          BanQuestion,
+         User
       ]),
       JwtModule.register({
          secret: process.env.PRIVATE_KEY,

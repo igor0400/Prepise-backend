@@ -56,6 +56,8 @@ export class QuestionsService {
       private questionCommentReplyRepository: typeof QuestionCommentReply,
       @InjectModel(BanQuestion)
       private banQuestionRepository: typeof BanQuestion,
+      @InjectModel(User)
+      private userRepository: typeof User,
       private filesService: FilesService,
       private tagsService: TagsService,
       private dataService: DataService,
@@ -594,16 +596,21 @@ export class QuestionsService {
    async likeQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Question],
       });
+      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (!info?.isLike) {
          await this.incQuestionParams(dto.questionId, 'likes');
+         user.likes += 1;
       }
 
       if (info?.isDislike) {
          await this.decQuestionParams(dto.questionId, 'dislikes');
+         user.dislikes -= 1;
       }
+
+      user.save();
 
       if (!info) {
          await this.questionUUIRepository.create({
@@ -612,6 +619,8 @@ export class QuestionsService {
             isLike: true,
          });
          await this.incQuestionParams(dto.questionId, 'viewes');
+         user.viewes += 1;
+         user.save();
 
          return true;
       }
@@ -624,12 +633,15 @@ export class QuestionsService {
    async deleteLikeQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Question],
       });
+      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (info?.isLike) {
          info.isLike = false;
          await this.decQuestionParams(dto.questionId, 'likes');
+         user.likes -= 1;
+         user.save();
       }
 
       return info?.save();
@@ -638,16 +650,21 @@ export class QuestionsService {
    async dislikeQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Question],
       });
+      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (!info?.isDislike) {
          await this.incQuestionParams(dto.questionId, 'dislikes');
+         user.dislikes += 1;
       }
 
       if (info?.isLike) {
          await this.decQuestionParams(dto.questionId, 'likes');
+         user.likes -= 1;
       }
+
+      user.save();
 
       if (!info) {
          await this.questionUUIRepository.create({
@@ -656,6 +673,8 @@ export class QuestionsService {
             isDislike: true,
          });
          await this.incQuestionParams(dto.questionId, 'viewes');
+         user.viewes += 1;
+         user.save();
 
          return true;
       }
@@ -668,12 +687,15 @@ export class QuestionsService {
    async deleteDislikeQuestion(dto: CreateQUUIDto) {
       const info = await this.questionUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Question],
       });
+      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (info?.isDislike) {
          info.isDislike = false;
          await this.decQuestionParams(dto.questionId, 'dislikes');
+         user.dislikes -= 1;
+         user.save();
       }
 
       return info?.save();
