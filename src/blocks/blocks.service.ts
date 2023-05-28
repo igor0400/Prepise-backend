@@ -295,12 +295,21 @@ export class BlocksService {
    async viewBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
 
       if (!info) {
          await this.incBlockParams(dto.blockId, 'viewes');
          await this.blockUUIRepository.create({ ...dto, view: true });
+
+         const block = await this.blockRepository.findByPk(dto.blockId);
+         if (block) {
+            const user = await this.userRepository.findByPk(block.authorId);
+            if (user) {
+               user.viewes += 1;
+               user.save();
+            }
+         }
       }
 
       return true;
@@ -309,7 +318,7 @@ export class BlocksService {
    async doneBlock(dto: CreateBUUIDto) {
       const info = await this.blockUUIRepository.findOne({
          where: { ...dto },
-         include: { all: true },
+         include: [Block],
       });
 
       if (!info) {
@@ -318,6 +327,15 @@ export class BlocksService {
             view: true,
             done: true,
          });
+         
+         const block = await this.blockRepository.findByPk(dto.blockId);
+         if (block) {
+            const user = await this.userRepository.findByPk(block.authorId);
+            if (user) {
+               user.viewes += 1;
+               user.save();
+            }
+         }
 
          return true;
       }

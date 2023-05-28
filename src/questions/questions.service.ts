@@ -564,16 +564,24 @@ export class QuestionsService {
          where: { ...dto },
          include: [Question],
       });
-      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (!info) {
          await this.incQuestionParams(dto.questionId, 'viewes');
          await this.questionUUIRepository.create({ ...dto, view: true });
-         user.viewes += 1;
-         user.save();
+
+         const question = await this.questionRepository.findByPk(
+            dto.questionId,
+         );
+         if (question) {
+            const user = await this.userRepository.findByPk(question.authorId);
+            if (user) {
+               user.viewes += 1;
+               user.save();
+            }
+         }
       }
 
-      return info;
+      return true;
    }
 
    async doneQuestion(dto: CreateQUUIDto) {
@@ -581,7 +589,6 @@ export class QuestionsService {
          where: { ...dto },
          include: [Question],
       });
-      const user = await this.userRepository.findByPk(info.question.authorId);
 
       if (!info) {
          await this.questionUUIRepository.create({
@@ -589,8 +596,17 @@ export class QuestionsService {
             view: true,
             done: true,
          });
-         user.viewes += 1;
-         user.save();
+
+         const question = await this.questionRepository.findByPk(
+            dto.questionId,
+         );
+         if (question) {
+            const user = await this.userRepository.findByPk(question.authorId);
+            if (user) {
+               user.viewes += 1;
+               user.save();
+            }
+         }
 
          return true;
       }

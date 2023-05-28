@@ -248,25 +248,40 @@ export class TagsService {
 
    async createUserTags(dto: CreateUserTagsDto) {
       await this.changeTagFields('inc', dto.tags, 'used');
-
-      return this.createUTags({
+      const createdTags = await this.createUTags({
          repository: this.userTagRepository,
          dto,
       });
+
+      return createdTags;
    }
 
    async deleteUserTags(dto: DeleteUserTagsDto) {
       await this.changeTagFields('dec', dto.tags, 'used');
 
-      return this.deleteUTags({
-         repository: this.userTagRepository,
-         dto,
+      const tags = await this.userTagRepository.findAll({
+         where: {
+            userId: dto.userId,
+         },
       });
+
+      if (tags) {
+         const deletedTags = await this.deleteUTags({
+            repository: this.userTagRepository,
+            dto: { ...dto, tags: tags.map((i) => String(i.tagId)) },
+         });
+
+         return deletedTags;
+      }
+
+      return false;
    }
 
    async changeUserTags(dto: CreateUserTagsDto) {
       await this.deleteUserTags(dto);
-      return this.createUserTags(dto);
+      const newTags = await this.createUserTags(dto);
+
+      return newTags;
    }
 
    async getUserFollowingTags(limit: number, offset: number, userId?: number) {
@@ -335,14 +350,14 @@ export class TagsService {
       const createdTags = [];
       const arrTags = typeof tags === 'string' ? [tags] : tags;
 
-      arrTags.forEach(async (tagId) => {
+      for (let tagId of arrTags) {
          createdTags.push(
             await args.repository.create({
                userId,
                tagId: +tagId,
             }),
          );
-      });
+      }
 
       return createdTags;
    }
@@ -364,7 +379,7 @@ export class TagsService {
       }
 
       if (typeof tags === 'object') {
-         tags.forEach(async (tagId) => {
+         for (let tagId of tags) {
             deletedTags.push({
                [tagId]: await args.repository.destroy({
                   where: {
@@ -373,7 +388,7 @@ export class TagsService {
                   },
                }),
             });
-         });
+         }
       } else if (typeof tags === 'string') {
          deletedTags.push({
             [tags]: await args.repository.destroy({

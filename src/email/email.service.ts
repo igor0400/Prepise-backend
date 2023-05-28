@@ -1,5 +1,10 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+   HttpException,
+   HttpStatus,
+   Injectable,
+   UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { join } from 'path';
 import { RedisCacheService } from 'src/redis/redis.service';
@@ -21,7 +26,7 @@ export class EmailService {
       });
 
       if (user) {
-        throw new UnauthorizedException('Данный email уже используется');
+         throw new UnauthorizedException('Данный email уже используется');
       }
 
       const verifyCode = uid(10);
@@ -67,6 +72,33 @@ export class EmailService {
             to: email,
             subject: 'Смена пароля',
             template: join(__dirname, '/../templates', 'changePassword'),
+            context: {
+               username: name,
+               verifyCode,
+            },
+         })
+         .catch((e) => {
+            console.log(e);
+            throw new HttpException(
+               `Ошибка работы почты`,
+               HttpStatus.UNPROCESSABLE_ENTITY,
+            );
+         });
+   }
+
+   async sendDefaultCode(userId: number) {
+      const user = await this.userRepository.findByPk(userId);
+
+      const { id, email, name } = user;
+
+      const verifyCode = uid(10);
+      await this.redisService.set(id.toString(), verifyCode);
+
+      return await this.mailerService
+         .sendMail({
+            to: email,
+            subject: 'Код подтверждения',
+            template: join(__dirname, '/../templates', 'default'),
             context: {
                username: name,
                verifyCode,

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CustomReq } from 'src/types/request-type';
 import { EmailVerifyDto } from './dto/email-verify.dto';
@@ -17,5 +17,11 @@ export class EmailController {
    @Post('change-pass')
    changePass(@Req() req: CustomReq) {
       return this.emailService.sendChangePassCode(+req.user.sub);
+   }
+
+   @UseGuards(JwtAuthGuard)
+   @Post('default')
+   default(@Req() req: CustomReq) {
+      return this.emailService.sendDefaultCode(+req.user.sub);
    }
 }

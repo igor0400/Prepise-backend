@@ -235,7 +235,32 @@ export class UsersService {
    }
 
    async changeUser(dto: ChangeUserDto, summaryFile: Express.Multer.File) {
-      const user = await this.userRepository.findByPk(dto.userId);
+      const { verifyCode, userId } = dto;
+      const verify = await this.emailService.checkVerifyCode(
+         userId.toString(),
+         verifyCode,
+      );
+
+      // if (!verify) {
+      //    throw new HttpException(
+      //       'Неправильный код подтверждения, возможно он устарел',
+      //       HttpStatus.BAD_REQUEST,
+      //    );
+      // }
+
+      const user = await this.userRepository.findOne({
+         where: {
+            id: userId,
+         },
+         include: [{ model: Tag, as: 'tags' }],
+      });
+
+      if (!user) {
+         throw new HttpException(
+            'Пользователь не найден',
+            HttpStatus.BAD_REQUEST,
+         );
+      }
 
       for (let key in dto) {
          if (user[key] !== undefined) {

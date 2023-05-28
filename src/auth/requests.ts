@@ -2,9 +2,11 @@ import { IsNotEmpty, IsOptional, IsEmail, IsString } from 'class-validator';
 
 export class LoginRequest {
    @IsNotEmpty({ message: 'Поле email обязательно' })
+   @IsString()
    readonly email: string;
 
    @IsNotEmpty({ message: 'Поле password обязательно' })
+   @IsString()
    readonly password: string;
 
    @IsNotEmpty({ message: 'Поле type обязательно' })
