@@ -241,12 +241,12 @@ export class UsersService {
          verifyCode,
       );
 
-      // if (!verify) {
-      //    throw new HttpException(
-      //       'Неправильный код подтверждения, возможно он устарел',
-      //       HttpStatus.BAD_REQUEST,
-      //    );
-      // }
+      if (!verify) {
+         throw new HttpException(
+            'Неправильный код подтверждения, возможно он устарел',
+            HttpStatus.BAD_REQUEST,
+         );
+      }
 
       const user = await this.userRepository.findOne({
          where: {

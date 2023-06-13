@@ -4,7 +4,13 @@ import { TokensService } from 'src/auth/tokens.service';
 import { UsersService } from './users.service';
 import { Server } from 'socket.io';
 
-@WebSocketGateway(9090, { namespace: 'users', cors: '*' })
+@WebSocketGateway(9090, {
+   namespace: 'users',
+   cors: {
+      credentials: true,
+      origin: [process.env.CLIENT_URL, 'http://localhost:3000'],
+   },
+})
 export class UsersGateway {
    constructor(
       private tokensService: TokensService,
